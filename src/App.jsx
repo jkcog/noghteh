@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { WORDS } from './wordList';
 
 // STYLES
@@ -25,7 +25,7 @@ const styles = {
     justifyContent: 'center',
     marginBottom: '3rem',
     position: 'relative',
-    padding: '20px',
+    padding: '60px',
     backgroundColor: 'white',
     borderRadius: '15px',
     boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
@@ -35,44 +35,73 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    margin: '0 2px',
+    // width: '75px',
+    // margin: '0',
+    // Negative margin to pull cursive letters together
+    marginLeft: '-5px',
   },
   character: {
-    fontSize: '80px',
-    lineHeight: '80px',
+    fontSize: '100px',
+    lineHeight: '100px',
     color: '#333',
     userSelect: 'none',
-    zIndex: 1,
   },
+
+  // --- CLICK ZONES ---
   dotZone: {
-    height: '30px',
+    height: '50px',
     width: '100%',
+
+    position: 'absolute',
+    left: '50%',
+
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     cursor: 'pointer',
-    zIndex: 2,
+    borderRadius: '8px',
+    transition: 'background-color 0.1s',
   },
+
   topZone: {
-    marginBottom: '-35px',
+    top: '-10px',
     alignItems: 'flex-end',
     paddingBottom: '5px',
   },
+
   bottomZone: {
+    bottom: '-45px',
     alignItems: 'flex-start',
-    paddingTop: '5px',
+    paddingTop: '0px',
   },
-  dotZoneHover: {
-    backgroundColor: 'rgba(0,0,0,0.05)',
-  },
+
+  // --- DOT STYLES ---
   dot: {
-    width: '10px',
-    height: '10px',
+    width: '8px',
+    height: '8px',
     backgroundColor: 'black',
     borderRadius: '50%',
-    margin: '0 2px',
+    margin: '0 0.9px',
     transform: 'rotate(45deg)',
+    boxShadow: '0 0 2px rgba(255,255,255,1)',
   },
+
+  cluster: {
+    position: 'relative',
+    width: '22px',
+    height: '18px',
+  },
+  clusterDot: {
+    width: '8px',
+    height: '8px',
+    backgroundColor: 'black',
+    borderRadius: '50%',
+    position: 'absolute',
+    transform: 'rotate(45deg)',
+    boxShadow: '0 0 2px rgba(255,255,255,1)',
+  },
+
+  // --- UI STYLES ---
   inventory: {
     display: 'flex',
     gap: '10px',
@@ -109,33 +138,39 @@ const styles = {
 };
 
 export default function NoghtehGame() {
-  // GAME STATE
-  const [currentWordIndex, setCurrentWordIndex] = useState(0);
-  const [boardState, setBoardState] = useState({});
   const [dotsPlaced, setDotsPlaced] = useState(0);
-  const [gameState, setGameState] = useState('loading'); // loading, playing, won, error
+  const [history, setHistory] = useState([]);
+  const [gameState, setGameState] = useState('playing');
+
+  const [currentWordIndex, setCurrentWordIndex] = useState(() =>
+    Math.floor(Math.random() * WORDS.length),
+  );
+  const [boardState, setBoardState] = useState(() => {
+    const word = WORDS[currentWordIndex];
+    const initialBoard = {};
+    word.letters.forEach((l) => {
+      initialBoard[l.id] = { top: 0, bottom: 0 };
+    });
+    return initialBoard;
+  });
+
+  const [hoveredZone, setHoveredZone] = useState({ id: null, pos: null });
 
   const currentWord = WORDS[currentWordIndex];
   const dotsRemaining = currentWord ? currentWord.dotAllowance - dotsPlaced : 0;
 
-  const loadWord = (index) => {
+  const loadWord = useCallback((index) => {
     const word = WORDS[index];
     const initialBoard = {};
-    // Create board state based on the new word's letters
     word.letters.forEach((l) => {
       initialBoard[l.id] = { top: 0, bottom: 0 };
     });
 
-    setCurrentWordIndex(index);
     setBoardState(initialBoard);
+    setCurrentWordIndex(index);
     setDotsPlaced(0);
+    setHistory([]);
     setGameState('playing');
-  };
-
-  // Init with random word
-  useEffect(() => {
-    const randomIndex = Math.floor(Math.random() * WORDS.length);
-    loadWord(randomIndex);
   }, []);
 
   const handleNextWord = () => {
@@ -148,20 +183,45 @@ export default function NoghtehGame() {
 
     const currentDotsInZone = boardState[id][position];
 
-    if (currentDotsInZone < 3) {
-      if (dotsRemaining > 0) {
-        setBoardState((prev) => ({
-          ...prev,
-          [id]: { ...prev[id], [position]: currentDotsInZone + 1 },
-        }));
-        setDotsPlaced((prev) => prev + 1);
-      }
-    } else {
+    if (currentDotsInZone >= 3) {
       setBoardState((prev) => ({
         ...prev,
         [id]: { ...prev[id], [position]: 0 },
       }));
       setDotsPlaced((prev) => prev - currentDotsInZone);
+      setHistory((prev) =>
+        prev.filter((move) => !(move.id === id && move.position === position)),
+      );
+      return;
+    }
+
+    if (dotsRemaining > 0) {
+      setBoardState((prev) => ({
+        ...prev,
+        [id]: { ...prev[id], [position]: currentDotsInZone + 1 },
+      }));
+      setDotsPlaced((prev) => prev + 1);
+      setHistory((prev) => [...prev, { id, position }]);
+    } else {
+      if (history.length === 0) return;
+      const oldestMove = history[0];
+
+      setBoardState((prev) => {
+        const nextState = { ...prev };
+        const oldZoneCount = nextState[oldestMove.id][oldestMove.position];
+        nextState[oldestMove.id] = {
+          ...nextState[oldestMove.id],
+          [oldestMove.position]: Math.max(0, oldZoneCount - 1),
+        };
+        const currentZoneCount = nextState[id][position];
+        nextState[id] = {
+          ...nextState[id],
+          [position]: currentZoneCount + 1,
+        };
+        return nextState;
+      });
+
+      setHistory((prev) => [...prev.slice(1), { id, position }]);
     }
   };
 
@@ -169,22 +229,29 @@ export default function NoghtehGame() {
     e.preventDefault();
     if (gameState === 'won') return;
 
-    setBoardState((prev) => {
-      const currentDots = prev[id][position];
-      if (currentDots > 0) {
-        setDotsPlaced((d) => d - 1);
-        return {
-          ...prev,
-          [id]: { ...prev[id], [position]: currentDots - 1 },
-        };
-      }
-      return prev;
-    });
+    const currentDots = boardState[id][position];
+    if (currentDots > 0) {
+      setBoardState((prev) => ({
+        ...prev,
+        [id]: { ...prev[id], [position]: currentDots - 1 },
+      }));
+      setDotsPlaced((d) => d - 1);
+      setHistory((prev) => {
+        const indexToRemove = prev
+          .map((m) => m.id === id && m.position === position)
+          .lastIndexOf(true);
+        if (indexToRemove !== -1) {
+          const newHist = [...prev];
+          newHist.splice(indexToRemove, 1);
+          return newHist;
+        }
+        return prev;
+      });
+    }
   };
 
   const checkWin = () => {
     let isWin = true;
-
     currentWord.letters.forEach((letter) => {
       const current = boardState[letter.id];
       if (
@@ -207,11 +274,48 @@ export default function NoghtehGame() {
         });
         setBoardState(initial);
         setDotsPlaced(0);
+        setHistory([]);
       }, 1000);
     }
   };
 
-  const renderDots = (count) => {
+  const renderDots = (count, position) => {
+    if (count === 0) return null;
+
+    if (count === 3) {
+      const isTop = position === 'top';
+      return (
+        <div style={styles.cluster}>
+          {isTop ? (
+            <>
+              <div
+                style={{
+                  ...styles.clusterDot,
+                  top: 0,
+                  left: '50%',
+                  transform: 'translateX(-50%) rotate(45deg)',
+                }}
+              />
+              <div style={{ ...styles.clusterDot, bottom: 0, left: 0 }} />
+              <div style={{ ...styles.clusterDot, bottom: 0, right: 0 }} />
+            </>
+          ) : (
+            <>
+              <div style={{ ...styles.clusterDot, top: 0, left: 0 }} />
+              <div style={{ ...styles.clusterDot, top: 0, right: 0 }} />
+              <div
+                style={{
+                  ...styles.clusterDot,
+                  bottom: 0,
+                  left: '50%',
+                  transform: 'translateX(-50%) rotate(45deg)',
+                }}
+              />
+            </>
+          )}
+        </div>
+      );
+    }
     return Array(count)
       .fill(0)
       .map((_, i) => <div key={i} style={styles.dot}></div>);
@@ -234,7 +338,6 @@ export default function NoghtehGame() {
         </p>
       </div>
 
-      {/* Dynamic Inventory Display */}
       <div style={styles.inventory}>
         {Array(currentWord.dotAllowance)
           .fill(0)
@@ -249,7 +352,6 @@ export default function NoghtehGame() {
           ))}
       </div>
 
-      {/* Dynamic Board Display */}
       <div
         style={{
           ...styles.gameBoard,
@@ -257,30 +359,62 @@ export default function NoghtehGame() {
             gameState === 'won' ? '2px solid #4ade80' : '2px solid transparent',
         }}
       >
-        {currentWord.letters.map((letter) => {
+        {currentWord.letters.map((letter, index) => {
           const currentState = boardState[letter.id] || { top: 0, bottom: 0 };
+          const offset = letter.bottomOffset || 0;
 
           return (
-            <div key={letter.id} style={styles.letterContainer}>
+            <div
+              key={letter.id}
+              style={{
+                ...styles.letterContainer,
+                // Standard RTL Stacking: Right letter (lower index) sits on top
+                zIndex: 100 - index,
+              }}
+            >
               {/* Top Click Zone */}
               <div
-                style={{ ...styles.dotZone, ...styles.topZone }}
+                style={{
+                  ...styles.dotZone,
+                  ...styles.topZone,
+                  transform: 'translateX(-50%)',
+                  // Hover Effect Logic
+                  backgroundColor:
+                    hoveredZone.id === letter.id && hoveredZone.pos === 'top'
+                      ? 'rgba(0, 128, 128, 0.1)'
+                      : 'transparent',
+                }}
                 onClick={() => handleZoneClick(letter.id, 'top')}
                 onContextMenu={(e) => handleRightClick(e, letter.id, 'top')}
+                onMouseEnter={() =>
+                  setHoveredZone({ id: letter.id, pos: 'top' })
+                }
+                onMouseLeave={() => setHoveredZone({ id: null, pos: null })}
               >
-                {renderDots(currentState.top)}
+                {renderDots(currentState.top, 'top')}
               </div>
 
-              {/* The Character Skeleton */}
               <div style={styles.character}>{letter.char}</div>
 
               {/* Bottom Click Zone */}
               <div
-                style={{ ...styles.dotZone, ...styles.bottomZone }}
+                style={{
+                  ...styles.dotZone,
+                  ...styles.bottomZone,
+                  transform: `translateX(calc(-50% + ${offset}px))`,
+                  backgroundColor:
+                    hoveredZone.id === letter.id && hoveredZone.pos === 'bottom'
+                      ? 'rgba(0, 128, 128, 0.1)'
+                      : 'transparent',
+                }}
                 onClick={() => handleZoneClick(letter.id, 'bottom')}
                 onContextMenu={(e) => handleRightClick(e, letter.id, 'bottom')}
+                onMouseEnter={() =>
+                  setHoveredZone({ id: letter.id, pos: 'bottom' })
+                }
+                onMouseLeave={() => setHoveredZone({ id: null, pos: null })}
               >
-                {renderDots(currentState.bottom)}
+                {renderDots(currentState.bottom, 'bottom')}
               </div>
             </div>
           );
@@ -299,13 +433,12 @@ export default function NoghtehGame() {
         }}
       >
         {gameState === 'won'
-          ? 'آفرین! (Well done!)'
+          ? 'آفرین! (!Well done)'
           : gameState === 'error'
-            ? 'Incorrect, try again.'
+            ? '.Incorrect, try again'
             : ''}
       </div>
 
-      {/* Button Logic */}
       {gameState !== 'won' ? (
         <button
           style={{ ...styles.button, opacity: dotsRemaining === 0 ? 1 : 0.5 }}
