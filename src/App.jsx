@@ -21,7 +21,7 @@ export default function NoghtehGame() {
   return (
     <div className="container">
       <div className="header">
-        <h1>نقطه (Noghteh)</h1>
+        <h1>نقطه Noghteh</h1>
         <p>
           Target:{' '}
           <strong>
