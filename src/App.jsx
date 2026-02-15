@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { WORDS } from './wordList';
 
 // STYLES
 const styles = {
   container: {
-    fontFamily: '"Vazirmatn", "Tahoma", sans-serif', // Need Farsi supporting font
+    fontFamily: '"Vazirmatn", "Tahoma", sans-serif',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -16,6 +17,7 @@ const styles = {
   header: {
     marginBottom: '2rem',
     textAlign: 'center',
+    color: 'teal',
   },
   gameBoard: {
     display: 'flex',
@@ -49,8 +51,16 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
     cursor: 'pointer',
-    transition: 'background 0.2s',
     zIndex: 2,
+  },
+  topZone: {
+    marginBottom: '-35px',
+    alignItems: 'flex-end',
+    paddingBottom: '5px',
+  },
+  bottomZone: {
+    alignItems: 'flex-start',
+    paddingTop: '5px',
   },
   dotZoneHover: {
     backgroundColor: 'rgba(0,0,0,0.05)',
@@ -61,7 +71,7 @@ const styles = {
     backgroundColor: 'black',
     borderRadius: '50%',
     margin: '0 2px',
-    transform: 'rotate(45deg)', // Diamond shape
+    transform: 'rotate(45deg)',
   },
   inventory: {
     display: 'flex',
@@ -90,7 +100,7 @@ const styles = {
     padding: '10px 20px',
     fontSize: '1rem',
     cursor: 'pointer',
-    backgroundColor: '#4f46e5',
+    backgroundColor: 'teal',
     color: 'white',
     border: 'none',
     borderRadius: '5px',
@@ -98,89 +108,84 @@ const styles = {
   },
 };
 
-const TARGET_WORD_DATA = [
-  {
-    id: 1,
-    char: '\u066E\u200D', // Initial Tooth
-    target: { top: 0, bottom: 1 }, // "B" (Beh) - 1 dot below
-  },
-  {
-    id: 2,
-    char: '\u200D\u066E\u200D', // Medial Tooth
-    target: { top: 0, bottom: 2 }, // "Y" (Ye) - 2 dots below
-  },
-  {
-    id: 3,
-    char: '\u200D\u066E\u200D', // Medial Tooth
-    target: { top: 1, bottom: 0 }, // "N" (Noon) - 1 dot above
-  },
-  {
-    id: 4,
-    char: '\u200D\u06CC', // Final Ye
-    target: { top: 0, bottom: 0 }, // "I" (Ye) - No dots
-  },
-];
-
-const INITIAL_DOT_ALLOWANCE = 4;
-
 export default function NoghtehGame() {
+  // GAME STATE
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [boardState, setBoardState] = useState({});
   const [dotsPlaced, setDotsPlaced] = useState(0);
-  const [gameState, setGameState] = useState('playing');
+  const [gameState, setGameState] = useState('loading'); // loading, playing, won, error
 
-  const resetGame = () => {
-    const initial = {};
-    TARGET_WORD_DATA.forEach((l) => {
-      initial[l.id] = { top: 0, bottom: 0 };
+  const currentWord = WORDS[currentWordIndex];
+  const dotsRemaining = currentWord ? currentWord.dotAllowance - dotsPlaced : 0;
+
+  const loadWord = (index) => {
+    const word = WORDS[index];
+    const initialBoard = {};
+    // Create board state based on the new word's letters
+    word.letters.forEach((l) => {
+      initialBoard[l.id] = { top: 0, bottom: 0 };
     });
-    setBoardState(initial);
+
+    setCurrentWordIndex(index);
+    setBoardState(initialBoard);
     setDotsPlaced(0);
     setGameState('playing');
   };
 
+  // Init with random word
   useEffect(() => {
-    resetGame();
+    const randomIndex = Math.floor(Math.random() * WORDS.length);
+    loadWord(randomIndex);
   }, []);
 
-  const dotsRemaining = INITIAL_DOT_ALLOWANCE - dotsPlaced;
+  const handleNextWord = () => {
+    const nextIndex = (currentWordIndex + 1) % WORDS.length;
+    loadWord(nextIndex);
+  };
 
   const handleZoneClick = (id, position) => {
     if (gameState === 'won') return;
 
     const currentDotsInZone = boardState[id][position];
 
-    // Case A: Zone is not full (0, 1, or 2 dots)
     if (currentDotsInZone < 3) {
-      // Only proceed if we have dots in the inventory
       if (dotsRemaining > 0) {
-        // 1. Update the Board Visuals
         setBoardState((prev) => ({
           ...prev,
           [id]: { ...prev[id], [position]: currentDotsInZone + 1 },
         }));
-
-        // 2. Update the inventory
         setDotsPlaced((prev) => prev + 1);
       }
-    }
-
-    // Case B: Zone is full (3 dots) -> Reset to 0
-    else {
-      // 1. Update the Board Visuals
+    } else {
       setBoardState((prev) => ({
         ...prev,
         [id]: { ...prev[id], [position]: 0 },
       }));
-
-      // 2. Return the dots to inventory
       setDotsPlaced((prev) => prev - currentDotsInZone);
     }
+  };
+
+  const handleRightClick = (e, id, position) => {
+    e.preventDefault();
+    if (gameState === 'won') return;
+
+    setBoardState((prev) => {
+      const currentDots = prev[id][position];
+      if (currentDots > 0) {
+        setDotsPlaced((d) => d - 1);
+        return {
+          ...prev,
+          [id]: { ...prev[id], [position]: currentDots - 1 },
+        };
+      }
+      return prev;
+    });
   };
 
   const checkWin = () => {
     let isWin = true;
 
-    TARGET_WORD_DATA.forEach((letter) => {
+    currentWord.letters.forEach((letter) => {
       const current = boardState[letter.id];
       if (
         current.top !== letter.target.top ||
@@ -194,32 +199,44 @@ export default function NoghtehGame() {
       setGameState('won');
     } else {
       setGameState('error');
-      setTimeout(() => setGameState('playing'), 2000);
+      setTimeout(() => {
+        setGameState('playing');
+        const initial = {};
+        currentWord.letters.forEach((l) => {
+          initial[l.id] = { top: 0, bottom: 0 };
+        });
+        setBoardState(initial);
+        setDotsPlaced(0);
+      }, 1000);
     }
   };
 
-  // Render dots for a specific zone
   const renderDots = (count) => {
     return Array(count)
       .fill(0)
       .map((_, i) => <div key={i} style={styles.dot}></div>);
   };
 
+  if (!currentWord) return <div>Loading...</div>;
+
   return (
     <div style={styles.container}>
       <div style={styles.header}>
         <h1>نقطه (Noghteh)</h1>
         <p>
-          Target: <strong>Bini (Nose)</strong>
+          Target:{' '}
+          <strong>
+            {currentWord.transliteration} ({currentWord.translation})
+          </strong>
         </p>
         <p style={{ fontSize: '0.9rem', color: '#666' }}>
           Click above or below the teeth to place dots.
         </p>
       </div>
 
-      {/* Inventory Display */}
+      {/* Dynamic Inventory Display */}
       <div style={styles.inventory}>
-        {Array(INITIAL_DOT_ALLOWANCE)
+        {Array(currentWord.dotAllowance)
           .fill(0)
           .map((_, i) => (
             <div
@@ -232,6 +249,7 @@ export default function NoghtehGame() {
           ))}
       </div>
 
+      {/* Dynamic Board Display */}
       <div
         style={{
           ...styles.gameBoard,
@@ -239,15 +257,16 @@ export default function NoghtehGame() {
             gameState === 'won' ? '2px solid #4ade80' : '2px solid transparent',
         }}
       >
-        {TARGET_WORD_DATA.map((letter) => {
+        {currentWord.letters.map((letter) => {
           const currentState = boardState[letter.id] || { top: 0, bottom: 0 };
 
           return (
             <div key={letter.id} style={styles.letterContainer}>
               {/* Top Click Zone */}
               <div
-                style={styles.dotZone}
+                style={{ ...styles.dotZone, ...styles.topZone }}
                 onClick={() => handleZoneClick(letter.id, 'top')}
+                onContextMenu={(e) => handleRightClick(e, letter.id, 'top')}
               >
                 {renderDots(currentState.top)}
               </div>
@@ -257,8 +276,9 @@ export default function NoghtehGame() {
 
               {/* Bottom Click Zone */}
               <div
-                style={styles.dotZone}
+                style={{ ...styles.dotZone, ...styles.bottomZone }}
                 onClick={() => handleZoneClick(letter.id, 'bottom')}
+                onContextMenu={(e) => handleRightClick(e, letter.id, 'bottom')}
               >
                 {renderDots(currentState.bottom)}
               </div>
@@ -285,25 +305,24 @@ export default function NoghtehGame() {
             : ''}
       </div>
 
-      {/* Logic Trigger: Auto-check when dots run out, or manual button */}
-      <button
-        style={{ ...styles.button, opacity: dotsRemaining === 0 ? 1 : 0.5 }}
-        onClick={checkWin}
-        disabled={gameState === 'won'}
-      >
-        Check Word
-      </button>
-
-      {gameState === 'won' && (
+      {/* Button Logic */}
+      {gameState !== 'won' ? (
+        <button
+          style={{ ...styles.button, opacity: dotsRemaining === 0 ? 1 : 0.5 }}
+          onClick={checkWin}
+        >
+          Check Word
+        </button>
+      ) : (
         <button
           style={{
             ...styles.button,
             backgroundColor: '#333',
             marginTop: '10px',
           }}
-          onClick={resetGame}
+          onClick={handleNextWord}
         >
-          Restart
+          Next Word &rarr;
         </button>
       )}
     </div>
