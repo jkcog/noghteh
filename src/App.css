@@ -1,42 +1,187 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+/* --- Layout --- */
+.container {
+  font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-width: 100vw;
+  background-color: #f3f4f6;
+  direction: rtl;
+}
+
+.header {
+  margin-bottom: 2rem;
   text-align: center;
+  color: teal;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.game-board {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 3rem;
+  position: relative;
+  padding: 60px;
+  background-color: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 2px solid transparent;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+.game-board.won {
+  border-color: #4ade80;
+}
+
+/* --- Letters --- */
+.letter-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* margin: 0; */
+  margin-left: -5px;
+}
+
+.character {
+  font-size: 100px;
+  line-height: 100px;
+  color: #333;
+  user-select: none;
+}
+
+/* --- Click Zones --- */
+.dot-zone {
+  height: 50px;
+  width: 100%;
+  position: absolute;
+  left: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.1s;
+}
+
+.dot-zone:hover {
+  background-color: rgba(0, 128, 128, 0.1);
+}
+
+.top-zone {
+  top: -10px;
+  align-items: flex-end;
+  padding-bottom: 5px;
+}
+
+.bottom-zone {
+  bottom: -45px;
+  align-items: flex-start;
+  padding-top: 0px;
+}
+
+/* --- Dots --- */
+.dot {
+  width: 8px;
+  height: 8px;
+  background-color: black;
+  border-radius: 50%;
+  margin: 0 0.9px;
+  transform: rotate(45deg);
+  box-shadow: 0 0 2px rgba(255, 255, 255, 1);
+}
+
+.cluster {
+  position: relative;
+  width: 22px;
+  height: 18px;
+}
+
+.cluster-dot {
+  width: 8px;
+  height: 8px;
+  background-color: black;
+  border-radius: 50%;
+  position: absolute;
+  transform: rotate(45deg);
+  box-shadow: 0 0 2px rgba(255, 255, 255, 1);
+}
+
+/* --- Inventory --- */
+.inventory {
+  display: flex;
+  gap: 10px;
+  padding: 15px;
+  background-color: #e5e7eb;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.inv-dot {
+  width: 20px;
+  height: 20px;
+  background-color: #000;
+  transform: rotate(45deg);
+  opacity: 1;
+}
+
+.inv-dot.used {
+  opacity: 0.2;
+}
+
+/* --- UI Controls --- */
+.message {
+  font-size: 1.5rem;
+  font-weight: bold;
+  height: 40px;
+}
+
+.message.won {
+  color: #16a34a;
+}
+.message.error {
+  color: #dc2626;
+}
+
+.btn {
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  background-color: teal;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  margin-top: 20px;
+}
+
+.btn.disabled {
+  opacity: 0.5;
+}
+
+.btn-restart {
+  background-color: #333;
+  margin-top: 10px;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
   }
-  to {
-    transform: rotate(360deg);
+  25% {
+    transform: translateX(-8px);
+  }
+  50% {
+    transform: translateX(8px);
+  }
+  75% {
+    transform: translateX(-8px);
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
+.shake {
+  animation: shake 0.4s ease-in-out;
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 10px rgba(220, 38, 38, 0.3);
 }
