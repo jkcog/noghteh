@@ -1,12 +1,11 @@
-import React from 'react';
 import './App.css';
 import { useGameLogic } from './hooks/useGameLogic';
 import { usePersianAudio } from './hooks/usePersianAudio';
 import { Inventory } from './components/Inventory';
 import { GameInterface } from './components/GameInterface';
 import { LightbulbIcon } from './components/Icons/LightbulbIcon';
-import { EyeClosed, EyeOpen } from './components/Icons/EyeIcon';
 import { SpeakerIcon } from './components/Icons/SpeakerIcon';
+import { EyeClosed, EyeOpen } from './components/Icons/EyeIcon';
 
 export default function NoghtehGame() {
   const {
@@ -27,7 +26,7 @@ export default function NoghtehGame() {
 
   const playAudio = usePersianAudio();
 
-  if (!currentWord) return <div className="loading">Loading...</div>;
+  if (!currentWord) return <div>Loading...</div>;
 
   return (
     <div className="container">
@@ -38,53 +37,47 @@ export default function NoghtehGame() {
           to remove.
         </p>
 
-        <h2 className="translation-main">{currentWord.translation}</h2>
-
-        <div className="pronunciation-row">
-          <button
-            onClick={toggleHardMode}
-            className={`visibility-toggle ${isHardMode ? 'active' : ''}`}
-            title={isHardMode ? 'Show Pronunciation' : 'Hide Pronunciation'}
-          >
-            {isHardMode ? <EyeClosed /> : <EyeOpen />}
-          </button>
-
-          <div
-            className={`transliteration-container ${isHardMode && gameState !== 'won' ? 'is-hidden' : 'is-visible'}`}
-          >
-            <span className="transliteration-text">
-              ({currentWord.transliteration})
-            </span>
-          </div>
+        <div className="target-section">
+          <p className="target-label">
+            Target:
+            <button
+              onClick={toggleHardMode}
+              className={`visibility-toggle ${isHardMode ? 'active' : ''}`}
+              title={isHardMode ? 'Show Pronunciation' : 'Hide Pronunciation'}
+            >
+              {isHardMode ? <EyeClosed /> : <EyeOpen />}
+            </button>
+            <strong
+              className={`transliteration-text ${isHardMode && gameState !== 'won' ? 'hidden' : ''}`}
+            >
+              {currentWord.transliteration}
+            </strong>
+            {currentWord.translation}
+          </p>
         </div>
 
-        <div className="controls-row">
-          <div className="control-col left">
-            <button
-              onClick={() => playAudio(currentWord.id)}
-              className="sound-button"
-              title="Listen"
-            >
+        <div className="header-controls">
+          <button
+            className="icon-btn-wrapper"
+            onClick={() => playAudio(currentWord.id)}
+            title="Listen"
+          >
+            <div className="icon-circle">
               <SpeakerIcon />
-            </button>
-          </div>
+            </div>
+            <span className="icon-label">Listen</span>
+          </button>
 
-          <div className="control-col center">
-            <button
-              className={`hint-btn-wrapper ${showHints ? 'active' : ''}`}
-              onClick={toggleHints}
-              aria-label={showHints ? 'Hide Hints' : 'Show Hints'}
-            >
-              <div className="hint-icon-circle">
-                <LightbulbIcon filled={showHints} />
-              </div>
-              <span className="hint-label">Hint</span>
-            </button>
-          </div>
-
-          <div className="control-col right spacer">
-            <SpeakerIcon />
-          </div>
+          <button
+            className={`icon-btn-wrapper ${showHints ? 'active' : ''}`}
+            onClick={toggleHints}
+            aria-label={showHints ? 'Hide Hints' : 'Show Hints'}
+          >
+            <div className="icon-circle">
+              <LightbulbIcon filled={showHints} />
+            </div>
+            <span className="icon-label">Hint</span>
+          </button>
         </div>
       </div>
 
@@ -106,7 +99,7 @@ export default function NoghtehGame() {
       <div className={`message ${gameState}`}>
         {gameState === 'won' ? (
           <>
-            <span>(!Well done)</span>
+            <span>!Well done</span>
             <span>آفرین!</span>
           </>
         ) : gameState === 'error' ? (
@@ -116,21 +109,19 @@ export default function NoghtehGame() {
         )}
       </div>
 
-      <div className="action-area">
-        {gameState !== 'won' ? (
-          <button
-            className={`btn ${dotsRemaining === 0 ? '' : 'disabled'}`}
-            onClick={checkWin}
-            disabled={dotsRemaining !== 0}
-          >
-            Check Word
-          </button>
-        ) : (
-          <button className="btn btn-restart" onClick={handleNextWord}>
-            Next Word &rarr;
-          </button>
-        )}
-      </div>
+      {gameState !== 'won' ? (
+        <button
+          className={`btn ${dotsRemaining === 0 ? '' : 'disabled'}`}
+          onClick={checkWin}
+          disabled={dotsRemaining !== 0}
+        >
+          Check Word
+        </button>
+      ) : (
+        <button className="btn btn-restart" onClick={handleNextWord}>
+          Next Word &rarr;
+        </button>
+      )}
 
       <footer className="footer">
         <div className="footer-content">

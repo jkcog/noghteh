@@ -1,10 +1,4 @@
-button:focus,
-button:active {
-  outline: none !important;
-  box-shadow: none !important;
-}
-
-/* --- Core Layout --- */
+/* --- Layout --- */
 .container {
   font-family: 'Vazirmatn', 'Tahoma', sans-serif;
   display: flex;
@@ -15,208 +9,139 @@ button:active {
   min-width: 100vw;
   background-color: #f3f4f6;
   direction: rtl;
-  padding: 10px;
-  box-sizing: border-box;
 }
 
 .header {
-  margin-bottom: 0.25rem;
+  margin-bottom: 2rem;
   text-align: center;
   color: teal;
-  width: 100%;
-  max-width: 450px;
 }
 
 .instructions {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   color: #6b7280;
+  margin-top: 0.5rem;
   margin-bottom: 0.5rem;
-  max-width: 280px;
-  line-height: 1.3;
+  max-width: 300px;
+  line-height: 1.4;
   font-style: italic;
   direction: ltr;
-  margin-left: auto;
-  margin-right: auto;
 }
 
-/* --- Word & Pronunciation Layout --- */
-.translation-main {
-  margin: 0;
-  font-size: 1.85rem;
-  color: #1f2937;
-  line-height: 1;
-}
-
-.pronunciation-row {
+/* --- Controls Container --- */
+.header-controls {
   display: flex;
-  align-items: center;
   justify-content: center;
-  gap: 6px;
-  min-height: 28px;
-  margin-bottom: 4px;
-  direction: ltr;
+  gap: 24px;
+  margin-top: 1rem;
 }
 
-.transliteration-container {
-  transition: all 0.3s ease;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-}
-
-.transliteration-container.is-hidden {
-  max-width: 0;
-  opacity: 0;
-  filter: blur(8px);
-}
-
-.transliteration-container.is-visible {
-  max-width: 300px;
-  opacity: 1;
-}
-
-.transliteration-text {
-  color: #6b7280;
-  font-weight: 500;
-  font-size: 1rem;
-}
-
-/* --- Controls Row (Audio & Hint) --- */
-.controls-row {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  width: 100%;
-  direction: ltr;
-  margin-top: 4px;
-}
-
-.control-col.left {
-  display: flex;
-  justify-content: flex-end;
-  padding-right: 15px;
-}
-
-.control-col.spacer.right {
-  visibility: hidden;
-  padding-left: 15px;
-}
-
-.visibility-toggle {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 2px;
-  display: flex;
-  color: #9ca3af;
-}
-
-.visibility-toggle.active {
-  color: #ef4444;
-}
-
-.sound-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #6b7280;
-  padding: 6px;
-  display: flex;
-  margin-bottom: 20px;
-  margin-right: 30px;
-}
-.sound-button:active {
-  color: teal;
-}
-
-/* --- Vertical Hint Button --- */
-.hint-btn-wrapper {
+/* --- Shared Button Styles (Hint & Audio) --- */
+.icon-btn-wrapper {
   background: none;
   border: none;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  padding: 2px;
+  gap: 6px;
+  padding: 0;
+  transition: transform 0.1s;
 }
 
-.hint-icon-circle {
-  width: 30px;
-  height: 30px;
+.icon-btn-wrapper:active {
+  transform: scale(0.95);
+}
+
+.icon-circle {
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: transparent;
   border: 1px solid #d1d5db;
   color: #6b7280;
+  transition: all 0.2s ease;
 }
 
-.hint-label {
-  font-size: 0.7rem;
+.icon-label {
+  font-size: 0.75rem;
   color: #9ca3af;
   font-weight: 500;
+  transition: color 0.2s ease;
 }
 
-.hint-btn-wrapper.active .hint-icon-circle {
+/* Hover States */
+@media (hover: hover) {
+  .icon-btn-wrapper:hover .icon-circle {
+    background-color: #f3f4f6;
+    border-color: #9ca3af;
+    color: #374151;
+  }
+  .icon-btn-wrapper:hover .icon-label {
+    color: #6b7280;
+  }
+}
+
+/* Active State (For Hints) */
+.icon-btn-wrapper.active .icon-circle {
+  background-color: #effdff;
   border-color: teal;
   color: #fbbf24;
-  background-color: #effdff;
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
 }
 
-.hint-btn-wrapper.active .hint-label {
+.icon-btn-wrapper.active .icon-label {
   color: teal;
+  font-weight: 600;
 }
 
-/* --- Inventory --- */
-.inventory {
-  display: flex;
-  gap: 8px;
-  padding: 10px;
-  background-color: #e5e7eb;
-  border-radius: 10px;
-  margin-bottom: 15px;
-  direction: ltr;
+button:focus,
+button:active {
+  outline: none;
 }
 
-.inv-dot {
-  width: 18px;
-  height: 18px;
-  background-color: #000;
-  transform: rotate(45deg);
+.icon-circle svg {
+  width: 20px;
+  height: 20px;
 }
 
-.inv-dot.used {
-  opacity: 0.15;
-}
-
-/* --- Game Board & Letters --- */
+/* --- Game Board --- */
 .game-board {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1rem;
+  margin-bottom: 3rem;
   position: relative;
-  padding: 50px 40px;
+  padding: 60px;
   background-color: white;
   border-radius: 15px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border: 2px solid transparent;
-  direction: rtl;
 }
 
 .game-board.won {
   border-color: #4ade80;
 }
 
+@media (max-width: 768px) {
+  .game-board {
+    margin-bottom: 2rem;
+    padding: 40px;
+  }
+}
+
+/* --- Letters --- */
 .letter-container {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-left: -5px;
-  height: 100px;
-  justify-content: center;
+  direction: rtl;
+  text-align: center;
 }
 
 .character {
@@ -224,11 +149,22 @@ button:active {
   line-height: 100px;
   color: #333;
   user-select: none;
+  font-feature-settings:
+    'kern' 1,
+    'liga' 1,
+    'calt' 1;
+  text-rendering: optimizeLegibility;
 }
 
-/* --- Click Zones & Hints --- */
+@media (max-width: 768px) {
+  .character {
+    font-size: 95px;
+  }
+}
+
+/* --- Click Zones --- */
 .dot-zone {
-  height: 40px;
+  height: 50px;
   width: 100%;
   position: absolute;
   left: 50%;
@@ -237,16 +173,72 @@ button:active {
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  z-index: 5;
+  border-radius: 8px;
+  transition: background-color 0.1s;
+}
+
+.dot-zone:hover {
+  background-color: rgba(0, 128, 128, 0.1);
 }
 
 .top-zone {
-  top: 0;
+  top: -10px;
   align-items: flex-end;
+  padding-bottom: 5px;
 }
+
 .bottom-zone {
-  bottom: -35px;
+  bottom: -45px;
   align-items: flex-start;
+  padding-top: 0px;
+}
+
+/* --- Dots --- */
+.dot {
+  width: 8px;
+  height: 8px;
+  background-color: black;
+  border-radius: 50%;
+  margin: 0 0.9px;
+  transform: rotate(45deg);
+  box-shadow: 0 0 2px rgba(255, 255, 255, 1);
+}
+
+@media (max-width: 768px) {
+  .dot {
+    width: 7px;
+    height: 7px;
+    margin: 0 0.7px;
+  }
+}
+
+.cluster {
+  position: relative;
+  width: 22px;
+  height: 18px;
+}
+
+.cluster-dot {
+  width: 8px;
+  height: 8px;
+  background-color: black;
+  border-radius: 50%;
+  position: absolute;
+  transform: rotate(45deg);
+  box-shadow: 0 0 2px rgba(255, 255, 255, 1);
+}
+
+/* --- Hints --- */
+@keyframes fadeOutHint {
+  0% {
+    opacity: 0.3;
+  }
+  80% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 .ghost-cluster {
@@ -259,40 +251,48 @@ button:active {
   justify-content: center;
   align-items: center;
   pointer-events: none;
-  animation: fadeOutHint 4.5s forwards linear;
+  opacity: 0.3;
+  z-index: 0;
+  animation: fadeOutHint 5s forwards linear;
 }
 
-@keyframes fadeOutHint {
-  0% {
-    opacity: 0.35;
-  }
-  80% {
-    opacity: 0.35;
-  }
-  100% {
-    opacity: 0;
-  }
+/* --- Inventory --- */
+.inventory {
+  display: flex;
+  gap: 10px;
+  padding: 15px;
+  background-color: #e5e7eb;
+  border-radius: 10px;
+  margin-bottom: 20px;
 }
 
-.dot {
-  width: 8px;
-  height: 8px;
-  background-color: black;
-  border-radius: 50%;
-  margin: 0 1px;
+.inv-dot {
+  width: 20px;
+  height: 20px;
+  background-color: #000;
   transform: rotate(45deg);
+  opacity: 1;
 }
 
-/* --- Action Area --- */
+.inv-dot.used {
+  opacity: 0.2;
+}
+
+/* --- UI Controls --- */
 .message {
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   font-weight: bold;
-  height: 30px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 15px;
-  margin-bottom: 0.5rem;
+  gap: 18px;
+  margin-bottom: 1rem;
+}
+
+.message span:first-child {
+  font-size: 1.2rem;
+  font-weight: 400;
 }
 
 .message.won {
@@ -303,13 +303,14 @@ button:active {
 }
 
 .btn {
-  padding: 0.7em 2em;
-  font-size: 1.1rem;
+  padding: 0.6em 1.2em;
+  font-size: 1rem;
+  cursor: pointer;
   background-color: teal;
   color: white;
   border: none;
-  border-radius: 8px;
-  min-width: 180px;
+  border-radius: 5px;
+  margin-top: 1rem;
 }
 
 .btn.disabled {
@@ -319,45 +320,13 @@ button:active {
   background-color: #333;
 }
 
-/* --- Footer --- */
-.footer {
-  margin-top: 2rem;
-  padding-bottom: 1.5rem;
-  direction: ltr;
-}
-.footer-content {
-  color: #9ca3af;
-  font-size: 0.8rem;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-.footer-link {
-  color: #6b7280;
-  text-decoration: none;
-}
-
-/* --- Mobile Fixes --- */
 @media (max-width: 768px) {
-  .game-board {
-    padding: 40px 20px;
-  }
-  .character {
-    font-size: 85px;
-    line-height: 85px;
-  }
-  .letter-container {
-    height: 85px;
-  }
-
   .btn {
+    margin-top: 0;
     width: 90%;
-    max-width: 320px;
-    padding: 0.8em;
   }
 }
 
-/* --- Animation --- */
 @keyframes shake {
   0%,
   100% {
@@ -373,7 +342,101 @@ button:active {
     transform: translateX(-8px);
   }
 }
+
 .shake {
   animation: shake 0.4s ease-in-out;
   border-color: #dc2626 !important;
+  box-shadow: 0 0 10px rgba(220, 38, 38, 0.3);
+}
+
+.footer {
+  margin-top: 6rem;
+  padding-bottom: 2rem;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  direction: ltr;
+}
+
+.footer-content {
+  color: #9ca3af;
+  font-size: 0.85rem;
+  font-family: sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.footer-link {
+  color: #6b7280;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.footer-link:hover {
+  color: #374151;
+}
+
+.separator {
+  opacity: 0.5;
+  margin: 0 0.25rem;
+}
+
+/* --- Hard Mode Styles --- */
+.target-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  direction: ltr;
+}
+
+.target-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* Eye Button Styles */
+.visibility-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  color: #9ca3af;
+  margin-left: 4px;
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
+}
+
+.visibility-toggle:hover {
+  transform: scale(1.1);
+  color: #6b7280;
+}
+
+.visibility-toggle.active {
+  color: #ef4444;
+}
+
+.visibility-toggle:focus {
+  outline: none;
+}
+
+/* Blur Effect Logic */
+.transliteration-text {
+  transition: all 0.3s ease;
+  filter: blur(0);
+  opacity: 1;
+}
+
+.transliteration-text.hidden {
+  filter: blur(6px);
+  opacity: 0.4;
+  user-select: none;
+  pointer-events: none;
 }
