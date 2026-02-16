@@ -25,12 +25,17 @@ export default function NoghtehGame() {
     <div className="container">
       <div className="header">
         <h1>نقطه Noghteh</h1>
+        <p className="instructions">
+          Place the correct dots on the letters. Left-click to add, right-click
+          to remove.
+        </p>
         <p>
           Target:{' '}
           <strong>
             {currentWord.transliteration} ({currentWord.translation})
           </strong>
         </p>
+
         <button
           className={`hint-btn-wrapper ${showHints ? 'active' : ''}`}
           onClick={toggleHints}
