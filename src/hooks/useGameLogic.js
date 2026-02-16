@@ -9,6 +9,13 @@ export const useGameLogic = () => {
   const [isShaking, setIsShaking] = useState(false);
   const [showHints, setShowHints] = useState(false);
   const [gameState, setGameState] = useState('playing');
+  const [streak, setStreak] = useState(() => {
+    return parseInt(localStorage.getItem('noghteh_streak') || '0');
+  });
+
+  const [bestStreak, setBestStreak] = useState(() => {
+    return parseInt(localStorage.getItem('noghteh_best_streak') || '0');
+  });
 
   const [isHardMode, setIsHardMode] = useState(() => {
     const saved = localStorage.getItem('noghteh_hard_mode');
@@ -31,6 +38,10 @@ export const useGameLogic = () => {
   const dotsRemaining = currentWord ? currentWord.dotAllowance - dotsPlaced : 0;
   const hintTimerRef = useRef(null);
 
+  // Track purity of the current round (using refs so they don't trigger re-renders)
+  const usedHintRef = useRef(false);
+  const madeMistakeRef = useRef(false);
+
   const toggleHardMode = useCallback(() => {
     setIsHardMode((prev) => {
       const nextValue = !prev;
@@ -46,6 +57,8 @@ export const useGameLogic = () => {
       initialBoard[l.id] = { top: 0, bottom: 0 };
     });
 
+    usedHintRef.current = false;
+    madeMistakeRef.current = false;
     setCurrentWordIndex(index);
     setBoardState(initialBoard);
     setDotsPlaced(0);
@@ -64,6 +77,8 @@ export const useGameLogic = () => {
     if (hintTimerRef.current) {
       clearTimeout(hintTimerRef.current);
     }
+
+    usedHintRef.current = true;
 
     setShowHints((prev) => {
       const nextValue = !prev;
@@ -168,8 +183,27 @@ export const useGameLogic = () => {
 
     if (isWin) {
       setGameState('won');
+
+      // Only increment if no hints were used and no mistakes were made
+      if (!usedHintRef.current && !madeMistakeRef.current) {
+        const newStreak = streak + 1;
+        setStreak(newStreak);
+        localStorage.setItem('noghteh_streak', newStreak);
+
+        // Update Best Score
+        if (newStreak > bestStreak) {
+          setBestStreak(newStreak);
+          localStorage.setItem('noghteh_best_streak', newStreak);
+        }
+      } else {
+        setStreak(0);
+        localStorage.setItem('noghteh_streak', 0);
+      }
     } else {
       setGameState('error');
+      madeMistakeRef.current = true;
+      setStreak(0);
+      localStorage.setItem('noghteh_streak', 0);
       setIsShaking(true);
       setTimeout(() => setIsShaking(false), 600);
       setTimeout(() => {
@@ -199,5 +233,7 @@ export const useGameLogic = () => {
     handleZoneClick,
     handleRightClick,
     checkWin,
+    streak,
+    bestStreak,
   };
 };
