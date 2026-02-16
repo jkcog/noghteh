@@ -31,14 +31,16 @@ export default function NoghtehGame() {
             {currentWord.transliteration} ({currentWord.translation})
           </strong>
         </p>
-
         <button
-          className={`btn-hint-icon ${showHints ? 'active' : ''}`} // New class name
+          className={`hint-btn-wrapper ${showHints ? 'active' : ''}`}
           onClick={toggleHints}
-          aria-label={showHints ? 'Hide Hints' : 'Show Hints'} // Critical for accessibility
-          title={showHints ? 'Hide Hints' : 'Show Hints'} // Tooltip for mouse users
+          aria-label={showHints ? 'Hide Hints' : 'Show Hints'}
         >
-          <LightbulbIcon filled={showHints} />
+          <div className="hint-icon-circle">
+            <LightbulbIcon filled={showHints} />
+          </div>
+
+          <span className="hint-label">Hint</span>
         </button>
       </div>
 

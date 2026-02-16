@@ -72,55 +72,6 @@
   transition: background-color 0.1s;
 }
 
-.ghost-cluster {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  pointer-events: none;
-  opacity: 0.3;
-  z-index: 0;
-}
-
-.btn-hint-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: 1px solid #d1d5db;
-  color: #6b7280;
-  cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  margin: 1rem auto 0 auto;
-}
-
-.btn-hint-icon:hover {
-  background-color: #f3f4f6;
-  border-color: #9ca3af;
-  color: #374151;
-  transform: scale(1.05);
-}
-
-.btn-hint-icon.active {
-  background-color: #effaff;
-  border-color: teal;
-  color: #fbbf24;
-  box-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
-}
-
-.btn-hint-icon svg {
-  width: 20px;
-  height: 20px;
-  overflow: visible;
-}
-
 .dot-zone:hover {
   background-color: rgba(0, 128, 128, 0.1);
 }
@@ -170,6 +121,88 @@
   position: absolute;
   transform: rotate(45deg);
   box-shadow: 0 0 2px rgba(255, 255, 255, 1);
+}
+
+/* --- Hints --- */
+.ghost-cluster {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  opacity: 0.3;
+  z-index: 0;
+}
+
+.hint-btn-wrapper {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin: 1rem auto 0 auto;
+  padding: 0;
+}
+
+.hint-icon-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid #d1d5db;
+  color: #6b7280;
+  transition: all 0.2s ease;
+}
+
+.hint-label {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+/* --- INTERACTION STATES --- */
+.hint-btn-wrapper:hover .hint-icon-circle {
+  background-color: #f3f4f6;
+  border-color: #9ca3af;
+  color: #374151;
+  transform: scale(1.05);
+}
+
+.hint-btn-wrapper:hover .hint-label {
+  color: #6b7280;
+}
+
+.hint-icon-circle {
+  background-color: #effdff;
+  border-color: teal;
+  color: #fbbf24;
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+}
+
+.hint-btn-wrapper.active .hint-label {
+  color: teal;
+  font-weight: 500;
+}
+
+.hint-btn-wrapper:focus {
+  outline: none;
+}
+
+.hint-icon-circle svg {
+  width: 20px;
+  height: 20px;
+  overflow: visible;
 }
 
 /* --- Inventory --- */
@@ -229,7 +262,7 @@
 
 @media (max-width: 768px) {
   .btn {
-    margin-top: 0.7rem;
+    margin-top: 0;
     width: 90%;
   }
 }
