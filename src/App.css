@@ -154,7 +154,6 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-
   display: flex;
   align-items: center;
   justify-content: center;
@@ -172,11 +171,24 @@
 }
 
 /* --- INTERACTION STATES --- */
-.hint-btn-wrapper:hover .hint-icon-circle {
-  background-color: #f3f4f6;
-  border-color: #9ca3af;
-  color: #374151;
-  transform: scale(1.05);
+@media (hover: hover) {
+  .hint-btn-wrapper:hover .hint-icon-circle {
+    background-color: #f3f4f6;
+    border-color: #9ca3af;
+    color: #374151;
+    transform: scale(1.05);
+  }
+
+  .hint-btn-wrapper:hover .hint-label {
+    color: #6b7280;
+  }
+}
+
+.hint-btn-wrapper.active .hint-icon-circle {
+  background-color: #eff6ff;
+  border-color: #60a5fa;
+  color: #fbbf24;
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
 }
 
 .hint-btn-wrapper:hover .hint-label {
