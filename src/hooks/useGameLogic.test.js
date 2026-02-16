@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { useGameLogic } from './useGameLogic';
 
 vi.mock('../wordList', () => ({
@@ -102,6 +102,13 @@ describe('useGameLogic', () => {
   });
 
   describe('When using the Hint System', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
     it('should start with hints disabled', () => {
       const { result } = renderHook(() => useGameLogic());
       expect(result.current.showHints).toBe(false);
@@ -116,6 +123,20 @@ describe('useGameLogic', () => {
       act(() => {
         result.current.toggleHints();
       });
+      expect(result.current.showHints).toBe(false);
+    });
+
+    it('should automatically hide hints after 5 seconds', () => {
+      const { result } = renderHook(() => useGameLogic());
+
+      act(() => {
+        result.current.toggleHints();
+      });
+      expect(result.current.showHints).toBe(true);
+      act(() => {
+        vi.advanceTimersByTime(5000);
+      });
+
       expect(result.current.showHints).toBe(false);
     });
 

@@ -1,9 +1,9 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { WORDS } from '../wordList';
 
 export const useGameLogic = () => {
   const [currentWordIndex, setCurrentWordIndex] = useState(() =>
-    Math.floor(Math.random() * WORDS.length)
+    Math.floor(Math.random() * WORDS.length),
   );
 
   const [isShaking, setIsShaking] = useState(false);
@@ -24,6 +24,7 @@ export const useGameLogic = () => {
 
   const currentWord = WORDS[currentWordIndex];
   const dotsRemaining = currentWord ? currentWord.dotAllowance - dotsPlaced : 0;
+  const hintTimerRef = useRef(null);
 
   const loadWord = useCallback((index) => {
     const word = WORDS[index];
@@ -41,12 +42,27 @@ export const useGameLogic = () => {
   }, []);
 
   const handleNextWord = () => {
+    if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
     const nextIndex = (currentWordIndex + 1) % WORDS.length;
     loadWord(nextIndex);
   };
 
   const toggleHints = () => {
-    setShowHints((prev) => !prev);
+    if (hintTimerRef.current) {
+      clearTimeout(hintTimerRef.current);
+    }
+
+    setShowHints((prev) => {
+      const nextValue = !prev;
+
+      if (nextValue === true) {
+        hintTimerRef.current = setTimeout(() => {
+          setShowHints(false);
+        }, 5000);
+      }
+
+      return nextValue;
+    });
   };
 
   const handleZoneClick = (id, position) => {
@@ -83,8 +99,8 @@ export const useGameLogic = () => {
 
       setBoardState((prev) => {
         const nextState = { ...prev };
-        
-        if (!nextState[oldestMove.id]) return prev; 
+
+        if (!nextState[oldestMove.id]) return prev;
 
         const oldZoneCount = nextState[oldestMove.id][oldestMove.position];
 
@@ -116,7 +132,7 @@ export const useGameLogic = () => {
         [id]: { ...prev[id], [position]: currentDots - 1 },
       }));
       setDotsPlaced((d) => d - 1);
-      
+
       setHistory((prev) => {
         const indexToRemove = prev
           .map((m) => m.id === id && m.position === position)

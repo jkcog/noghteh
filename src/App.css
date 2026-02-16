@@ -124,6 +124,18 @@
 }
 
 /* --- Hints --- */
+@keyframes fadeOutHint {
+  0% {
+    opacity: 0.3;
+  }
+  80% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
 .ghost-cluster {
   position: absolute;
   top: 0;
@@ -136,6 +148,7 @@
   pointer-events: none;
   opacity: 0.3;
   z-index: 0;
+  animation: fadeOutHint 5s forwards linear;
 }
 
 .hint-btn-wrapper {
