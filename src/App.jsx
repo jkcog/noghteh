@@ -1,8 +1,12 @@
+import React from 'react';
 import './App.css';
 import { useGameLogic } from './hooks/useGameLogic';
+import { usePersianAudio } from './hooks/usePersianAudio';
 import { Inventory } from './components/Inventory';
 import { GameInterface } from './components/GameInterface';
-import { LightbulbIcon } from './components/LightbulbIcon';
+import { LightbulbIcon } from './components/Icons/LightbulbIcon';
+import { EyeClosed, EyeOpen } from './components/Icons/EyeIcon';
+import { SpeakerIcon } from './components/Icons/SpeakerIcon';
 
 export default function NoghtehGame() {
   const {
@@ -17,9 +21,13 @@ export default function NoghtehGame() {
     checkWin,
     showHints,
     toggleHints,
+    isHardMode,
+    toggleHardMode,
   } = useGameLogic();
 
-  if (!currentWord) return <div>Loading...</div>;
+  const playAudio = usePersianAudio();
+
+  if (!currentWord) return <div className="loading">Loading...</div>;
 
   return (
     <div className="container">
@@ -29,22 +37,55 @@ export default function NoghtehGame() {
           Place the correct dots on the letters. Left-click to add, right-click
           to remove.
         </p>
-        <p>
-          Target: <strong>{currentWord.transliteration}</strong> (
-          {currentWord.translation})
-        </p>
 
-        <button
-          className={`hint-btn-wrapper ${showHints ? 'active' : ''}`}
-          onClick={toggleHints}
-          aria-label={showHints ? 'Hide Hints' : 'Show Hints'}
-        >
-          <div className="hint-icon-circle">
-            <LightbulbIcon filled={showHints} />
+        <h2 className="translation-main">{currentWord.translation}</h2>
+
+        <div className="pronunciation-row">
+          <button
+            onClick={toggleHardMode}
+            className={`visibility-toggle ${isHardMode ? 'active' : ''}`}
+            title={isHardMode ? 'Show Pronunciation' : 'Hide Pronunciation'}
+          >
+            {isHardMode ? <EyeClosed /> : <EyeOpen />}
+          </button>
+
+          <div
+            className={`transliteration-container ${isHardMode && gameState !== 'won' ? 'is-hidden' : 'is-visible'}`}
+          >
+            <span className="transliteration-text">
+              ({currentWord.transliteration})
+            </span>
+          </div>
+        </div>
+
+        <div className="controls-row">
+          <div className="control-col left">
+            <button
+              onClick={() => playAudio(currentWord.id)}
+              className="sound-button"
+              title="Listen"
+            >
+              <SpeakerIcon />
+            </button>
           </div>
 
-          <span className="hint-label">Hint</span>
-        </button>
+          <div className="control-col center">
+            <button
+              className={`hint-btn-wrapper ${showHints ? 'active' : ''}`}
+              onClick={toggleHints}
+              aria-label={showHints ? 'Hide Hints' : 'Show Hints'}
+            >
+              <div className="hint-icon-circle">
+                <LightbulbIcon filled={showHints} />
+              </div>
+              <span className="hint-label">Hint</span>
+            </button>
+          </div>
+
+          <div className="control-col right spacer">
+            <SpeakerIcon />
+          </div>
+        </div>
       </div>
 
       <Inventory
@@ -75,19 +116,21 @@ export default function NoghtehGame() {
         )}
       </div>
 
-      {gameState !== 'won' ? (
-        <button
-          className={`btn ${dotsRemaining === 0 ? '' : 'disabled'}`}
-          onClick={checkWin}
-          disabled={dotsRemaining !== 0}
-        >
-          Check Word
-        </button>
-      ) : (
-        <button className="btn btn-restart" onClick={handleNextWord}>
-          Next Word &rarr;
-        </button>
-      )}
+      <div className="action-area">
+        {gameState !== 'won' ? (
+          <button
+            className={`btn ${dotsRemaining === 0 ? '' : 'disabled'}`}
+            onClick={checkWin}
+            disabled={dotsRemaining !== 0}
+          >
+            Check Word
+          </button>
+        ) : (
+          <button className="btn btn-restart" onClick={handleNextWord}>
+            Next Word &rarr;
+          </button>
+        )}
+      </div>
 
       <footer className="footer">
         <div className="footer-content">

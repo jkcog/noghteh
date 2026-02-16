@@ -1,4 +1,4 @@
-const createWord = (id, translation, transliteration, letters) => {
+const createWord = (id, translation, transliteration, persian, letters) => {
   const dotAllowance = letters.reduce((acc, letter) => {
     return acc + letter.target.top + letter.target.bottom;
   }, 0);
@@ -7,6 +7,7 @@ const createWord = (id, translation, transliteration, letters) => {
     id,
     translation,
     transliteration,
+    persian, // for tts
     dotAllowance,
     letters: letters.map((l, index) => ({ ...l, id: index })),
   };
@@ -18,9 +19,8 @@ const topFeOffset = -12;
 const topKheOffset = -15;
 
 export const WORDS = [
-  //   1. Bābā (Dad)
-  createWord(1, 'Dad', 'Bābā', [
-    // Shift Left (bottomOffsetValue) to center under the line
+  // 1. Bābā (Dad)
+  createWord(1, 'Dad', 'Bābā', 'بابا', [
     {
       char: '\u066E\u200D',
       target: { top: 0, bottom: 1 },
@@ -36,16 +36,14 @@ export const WORDS = [
   ]),
 
   // 2. Tūt (Berry)
-  createWord(2, 'Berry', 'Tūt', [
-    // No bottom offset needed
+  createWord(2, 'Berry', 'Tūt', 'توت', [
     { char: '\u066E\u200D', target: { top: 2, bottom: 0 }, bottomOffset: 0 },
     { char: '\u0648', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
     { char: '\u066E', target: { top: 2, bottom: 0 }, bottomOffset: 0 },
   ]),
 
   // 3. Pā (Foot)
-  createWord(3, 'Foot', 'Pā', [
-    // Shift Left (bottomOffsetValue) for the 3 dots
+  createWord(3, 'Foot', 'Pā', 'پا', [
     {
       char: '\u066E\u200D',
       target: { top: 0, bottom: 3 },
@@ -55,84 +53,71 @@ export const WORDS = [
   ]),
 
   // 4. Nān (Bread)
-  createWord(4, 'Bread', 'Nān', [
+  createWord(4, 'Bread', 'Nān', 'نان', [
     { char: '\u066E\u200D', target: { top: 1, bottom: 0 }, bottomOffset: 0 },
     { char: '\uFE8E', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
     { char: '\u06BA', target: { top: 1, bottom: 0 }, bottomOffset: 0 },
   ]),
 
   // 5. Bīnī (Nose)
-  createWord(5, 'Nose', 'Bīnī', [
-    // Be (Init): Shift Left
+  createWord(5, 'Nose', 'Bīnī', 'بینی', [
     {
       char: '\u066E\u200D',
       target: { top: 0, bottom: 1 },
       bottomOffset: bottomOffsetValue,
     },
-
-    // Ye (Medial): Shift Left
     {
       char: '\u200D\u066E\u200D',
       target: { top: 0, bottom: 2 },
       bottomOffset: 0,
     },
-
-    // Noon (Medial)
     {
       char: '\u200D\u066E\u200D',
       target: { top: 1, bottom: 0 },
       bottomOffset: 0,
     },
-
-    // Ye (Final): Center
     { char: '\u200D\u06CC', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
   ]),
 
   // 7. Tūp (Ball)
-  createWord(7, 'Ball', 'Tūp', [
+  createWord(7, 'Ball', 'Tūp', 'توپ', [
     {
       char: '\u066E\u200D',
       target: { top: 2, bottom: 0 },
       bottomOffset: bottomOffsetValue,
-    }, // Te (2 Up)
-    { char: '\uFEEE', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Vav (Joined)
-    { char: '\u066E', target: { top: 0, bottom: 3 }, bottomOffset: 0 }, // Pe (Full - 3 Down)
+    },
+    { char: '\uFEEE', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
+    { char: '\u066E', target: { top: 0, bottom: 3 }, bottomOffset: 0 },
   ]),
 
   // 8. Zan (Woman)
-  createWord(8, 'Woman', 'Zan', [
-    // Requires 1 dot on top to make it "Ze".
+  createWord(8, 'Woman', 'Zan', 'زن', [
     { char: '\u0631', target: { top: 1, bottom: 0 }, bottomOffset: 0 },
-    { char: '\u06BA', target: { top: 1, bottom: 0 }, bottomOffset: 0 }, // Noon (Bowl - 1 Up)
+    { char: '\u06BA', target: { top: 1, bottom: 0 }, bottomOffset: 0 },
   ]),
 
   // 9. Asb (Horse)
-  createWord(9, 'Horse', 'Asb', [
-    { char: '\u0627', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Alif
+  createWord(9, 'Horse', 'Asb', 'اسب', [
+    { char: '\u0627', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
     { char: '\u0633\u200D', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
-    { char: '\u200D\u066E', target: { top: 0, bottom: 1 }, bottomOffset: 0 }, // Be (Joined - 1 Down)
+    { char: '\u200D\u066E', target: { top: 0, bottom: 1 }, bottomOffset: 0 },
   ]),
-  // 10. Sīb (Apple) - سیب
-  createWord(10, 'Apple', 'Sīb', [
-    // Sin (Init): Naturally dotless (\u0633)
+
+  // 10. Sīb (Apple)
+  createWord(10, 'Apple', 'Sīb', 'سیب', [
     { char: '\u0633\u200D', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
-    // Ye (Medial): Tooth (2 down)
     {
       char: '\u200D\u066E\u200D',
       target: { top: 0, bottom: 2 },
       bottomOffset: 0,
     },
-    // Be (Final): Boat (1 down)
     { char: '\u200D\u066E', target: { top: 0, bottom: 1 }, bottomOffset: 0 },
   ]),
 
-  // 11. Mūsh (Mouse) - موش
-  createWord(11, 'Mouse', 'Mūsh', [
-    // Mim (Init): Loop (\uFEE3 is presentation form for Mim Init)
+  // 11. Mūsh (Mouse)
+  createWord(11, 'Mouse', 'Mūsh', 'موش', [
     { char: '\uFEE3', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
-    // Vav: (\uFEEE is joined Vav)
     { char: '\uFEEE', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
-    // Shin (Final): use Sin (\u0633) and require 3 dots on top
     {
       char: '\u0633',
       target: { top: 3, bottom: 0 },
@@ -141,43 +126,35 @@ export const WORDS = [
     },
   ]),
 
-  // 12. Āb (Water) - آب
-  createWord(12, 'Water', 'Āb', [
-    // Alif-Madda: The wave is part of the char, so 0 dots needed.
+  // 12. Āb (Water)
+  createWord(12, 'Water', 'Āb', 'آب', [
     { char: '\u0622', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
-    // Be (Isolated): Full boat shape
     { char: '\u066E', target: { top: 0, bottom: 1 }, bottomOffset: 0 },
   ]),
 
-  // 13. Pesar (Boy) - پسر
-  createWord(13, 'Boy', 'Pesar', [
-    // Pe (Init): Tooth (3 down)
+  // 13. Pesar (Boy)
+  createWord(13, 'Boy', 'Pesar', 'پسر', [
     {
       char: '\u066E\u200D',
       target: { top: 0, bottom: 3 },
       bottomOffset: bottomOffsetValue,
     },
-    // Sin (Medial): Teeth without dots
     {
       char: '\u200D\u0633\u200D',
       target: { top: 0, bottom: 0 },
       bottomOffset: 0,
     },
-    // Re (Final): Joined Re
     { char: '\uFEAE', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
   ]),
 
-  // 14. Barf (Snow) - برف
-  createWord(14, 'Snow', 'Barf', [
-    // Be (Init): Tooth (1 down)
+  // 14. Barf (Snow)
+  createWord(14, 'Snow', 'Barf', 'برف', [
     {
       char: '\u066E\u200D',
       target: { top: 0, bottom: 1 },
       bottomOffset: bottomOffsetValue,
     },
-    // Re (Joined): No dots
     { char: '\uFEAE', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
-    // Fe (Isolated): \u06A1 (Dotless Fe) and add 1 dot top
     {
       char: '\u06A1',
       target: { top: 1, bottom: 0 },
@@ -186,29 +163,22 @@ export const WORDS = [
     },
   ]),
 
-  // 15. Shab (Night) - شب
-  createWord(15, 'Night', 'Shab', [
-    // Shin (Init): We use Sin (\u0633) + 3 dots top
+  // 15. Shab (Night)
+  createWord(15, 'Night', 'Shab', 'شب', [
     { char: '\u0633\u200D', target: { top: 3, bottom: 0 }, bottomOffset: 0 },
-    // Be (Final): Full boat (\u066E) + 1 dot bottom
     { char: '\u200D\u066E', target: { top: 0, bottom: 1 }, bottomOffset: 0 },
   ]),
 
-  // 16. Chāy (Tea) - چای
-  createWord(16, 'Tea', 'Chāy', [
-    // Che (Init): We use Hah (\u062D) which is the dotless base + 3 dots bottom
+  // 16. Chāy (Tea)
+  createWord(16, 'Tea', 'Chāy', 'چای', [
     { char: '\u062D\u200D', target: { top: 0, bottom: 3 }, bottomOffset: 0 },
-    // Alif (Joined):
     { char: '\uFE8E', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
-    // Ye (Final): Farsi Ye is naturally dotless
     { char: '\u06CC', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
   ]),
 
-  // 17. Yakh (Ice) - یخ
-  createWord(17, 'Ice', 'Yakh', [
-    // Ye (Init): Tooth (\u066E) + 2 dots bottom
+  // 17. Yakh (Ice)
+  createWord(17, 'Ice', 'Yakh', 'یخ', [
     { char: '\u066E\u200D', target: { top: 0, bottom: 2 }, bottomOffset: 0 },
-    // Khe (Final): Hah base (\u062D) + 1 dot top
     {
       char: '\u200D\u062D',
       target: { top: 1, bottom: 0 },
@@ -217,487 +187,471 @@ export const WORDS = [
     },
   ]),
 
-  // 18. Daryā (Sea) - دریا
-  createWord(18, 'Sea', 'Daryā', [
-    // Dal: Naturally dotless
+  // 18. Daryā (Sea)
+  createWord(18, 'Sea', 'Daryā', 'دریا', [
     { char: '\u062F', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
-    // Re: Naturally dotless
     { char: '\u0631', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
-    // Ye (Init form because it starts a new block): Tooth + 2 dots bottom
     { char: '\u066E\u200D', target: { top: 0, bottom: 2 }, bottomOffset: 0 },
-    // Alif (Joined)
     { char: '\uFE8E', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
   ]),
 
-  // 19. Panīr (Cheese) - پنیر
-  createWord(19, 'Cheese', 'Panīr', [
-    // Pe (Init): Tooth + 3 dots bottom
+  // 19. Panīr (Cheese)
+  createWord(19, 'Cheese', 'Panīr', 'پنیر', [
     {
       char: '\u066E\u200D',
       target: { top: 0, bottom: 3 },
       bottomOffset: bottomOffsetValue,
     },
-    // Nun (Medial): Tooth + 1 dot top
     {
       char: '\u200D\u066E\u200D',
       target: { top: 1, bottom: 0 },
       bottomOffset: 0,
     },
-    // Ye (Medial): Tooth + 2 dots bottom
     {
       char: '\u200D\u066E\u200D',
       target: { top: 0, bottom: 2 },
       bottomOffset: 0,
     },
-    // Re (Final Joined): Naturally dotless
     { char: '\uFEAE', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
   ]),
 
-  // 20. Bārān (Rain) - باران
-  createWord(20, 'Rain', 'Bārān', [
+  // 20. Bārān (Rain)
+  createWord(20, 'Rain', 'Bārān', 'باران', [
     {
       char: '\u066E\u200D',
       target: { top: 0, bottom: 1 },
       bottomOffset: bottomOffsetValue,
-    }, // Be
-    { char: '\uFE8E', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Alif
-    { char: '\u0631', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Re
-    { char: '\u0627', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Alif
-    { char: '\u06BA', target: { top: 1, bottom: 0 }, bottomOffset: 0 }, // Nun
+    },
+    { char: '\uFE8E', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
+    { char: '\u0631', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
+    { char: '\u0627', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
+    { char: '\u06BA', target: { top: 1, bottom: 0 }, bottomOffset: 0 },
   ]),
 
-  // 21. Zabān (Tongue/Language) - زبان
-  createWord(21, 'Tongue', 'Zabān', [
-    { char: '\u0631', target: { top: 1, bottom: 0 }, bottomOffset: 0 }, // Ze
+  // 21. Zabān (Tongue)
+  createWord(21, 'Tongue', 'Zabān', 'زبان', [
+    { char: '\u0631', target: { top: 1, bottom: 0 }, bottomOffset: 0 },
     {
       char: '\u066E\u200D',
       target: { top: 0, bottom: 1 },
       bottomOffset: bottomOffsetValue,
-    }, // Be
-    { char: '\uFE8E', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Alif
-    { char: '\u06BA', target: { top: 1, bottom: 0 }, bottomOffset: 0 }, // Nun
+    },
+    { char: '\uFE8E', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
+    { char: '\u06BA', target: { top: 1, bottom: 0 }, bottomOffset: 0 },
   ]),
 
-  // 22. Jūjeh (Chicken) - جوجه
-  createWord(22, 'Chicken', 'Jūjeh', [
-    { char: '\u062D\u200D', target: { top: 0, bottom: 1 }, bottomOffset: 0 }, // Je (Hah base + 1 dot bottom)
-    { char: '\uFEEE', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Vav (Joined)
-    { char: '\u062D\u200D', target: { top: 0, bottom: 1 }, bottomOffset: 0 }, // Je (Medial)
-    { char: '\uFE94', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Heh (Final Joined)
+  // 22. Jūjeh (Chicken)
+  createWord(22, 'Chicken', 'Jūjeh', 'جوجه', [
+    { char: '\u062D\u200D', target: { top: 0, bottom: 1 }, bottomOffset: 0 },
+    { char: '\uFEEE', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
+    { char: '\u062D\u200D', target: { top: 0, bottom: 1 }, bottomOffset: 0 },
+    { char: '\uFE94', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
   ]),
 
-  // 23. Derakht (Tree) - درخت
-  createWord(23, 'Tree', 'Derakht', [
-    { char: '\u062F', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Dal
-    { char: '\u0631', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Re
+  // 23. Derakht (Tree)
+  createWord(23, 'Tree', 'Derakht', 'درخت', [
+    { char: '\u062F', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
+    { char: '\u0631', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
     {
       char: '\u062D\u200D',
       target: { top: 1, bottom: 0 },
       topYOffset: topKheOffset,
-    }, // Khe (Init-style because Re doesn't join)
-    { char: '\u200D\u066E', target: { top: 2, bottom: 0 }, bottomOffset: 0 }, // Te (Final Joined)
+    },
+    { char: '\u200D\u066E', target: { top: 2, bottom: 0 }, bottomOffset: 0 },
   ]),
 
-  // 24. Farsh (Carpet) - فرش
-  createWord(24, 'Carpet', 'Farsh', [
+  // 24. Farsh (Carpet)
+  createWord(24, 'Carpet', 'Farsh', 'فرش', [
     {
       char: '\u06A1\u200D',
       target: { top: 1, bottom: 0 },
       topYOffset: topFeOffset,
-    }, // Fe (Init)
-    { char: '\uFEAE', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Re (Joined)
+    },
+    { char: '\uFEAE', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
     {
       char: '\u0633',
       target: { top: 3, bottom: 0 },
       topOffset: topShinOffset,
       bottomOffset: 0,
-    }, // Shin (Final Isolated)
+    },
   ]),
 
-  // 25. Bādām (Almond) - بادام
-  createWord(25, 'Almond', 'Bādām', [
+  // 25. Bādām (Almond)
+  createWord(25, 'Almond', 'Bādām', 'بادام', [
     {
       char: '\u066E\u200D',
       target: { top: 0, bottom: 1 },
       bottomOffset: bottomOffsetValue,
-    }, // Be
-    { char: '\uFE8E', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Alif
-    { char: '\u062F', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Dal
-    { char: '\u0627', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Alif
-    { char: '\u0645', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Mim
+    },
+    { char: '\uFE8E', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
+    { char: '\u062F', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
+    { char: '\u0627', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
+    { char: '\u0645', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
   ]),
 
-  // 26. Doost (Friend) - دوست
-  createWord(26, 'Friend', 'Doost', [
-    { char: '\u062F', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Dal
-    { char: '\u0648', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Vav
-    { char: '\u0633\u200D', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Sin (Medial)
-    { char: '\u200D\u066E', target: { top: 2, bottom: 0 }, bottomOffset: 0 }, // Te (Final Joined)
+  // 26. Doost (Friend)
+  createWord(26, 'Friend', 'Doost', 'دوست', [
+    { char: '\u062F', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
+    { char: '\u0648', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
+    { char: '\u0633\u200D', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
+    { char: '\u200D\u066E', target: { top: 2, bottom: 0 }, bottomOffset: 0 },
   ]),
 
-  // 27. Shīr (Lion/Milk) - شیر
-  createWord(27, 'Lion/Milk', 'Shīr', [
-    // Shin (Init): 3 dots top
+  // 27. Shīr (Lion/Milk)
+  createWord(27, 'Lion/Milk', 'Shīr', 'شیر', [
     {
       char: '\u0633\u200D',
       target: { top: 3, bottom: 0 },
       topOffset: topShinOffset,
       topYOffset: -5,
     },
-    // Ye (Medial): 2 dots bottom
     {
       char: '\u200D\u066E\u200D',
       target: { top: 0, bottom: 2 },
       bottomOffset: 0,
     },
-    // Re: No dots
     { char: '\u0631', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
   ]),
 
-  // 28. Khāneh (House) - خانه
-  createWord(28, 'House', 'Khāneh', [
+  // 28. Khāneh (House)
+  createWord(28, 'House', 'Khāneh', 'خانه', [
     {
       char: '\u062D\u200D',
       target: { top: 1, bottom: 0 },
       topYOffset: topKheOffset,
-    }, // Khe
-    { char: '\uFE8E', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Alif (Joined)
-    { char: '\u066E\u200D', target: { top: 1, bottom: 0 }, bottomOffset: 0 }, // Nun (Init)
-    { char: '\u0647', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Heh
+    },
+    { char: '\uFE8E', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
+    { char: '\u066E\u200D', target: { top: 1, bottom: 0 }, bottomOffset: 0 },
+    { char: '\u0647', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
   ]),
 
-  // 29. Khūb (Good) - خوب
-  createWord(29, 'Good', 'Khūb', [
+  // 29. Khūb (Good)
+  createWord(29, 'Good', 'Khūb', 'خوب', [
     {
       char: '\u062D\u200D',
       target: { top: 1, bottom: 0 },
       topYOffset: topKheOffset,
-    }, // Khe
-    { char: '\u0648', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Vav
-    { char: '\u066E', target: { top: 0, bottom: 1 }, bottomOffset: 0 }, // Be
+    },
+    { char: '\u0648', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
+    { char: '\u066E', target: { top: 0, bottom: 1 }, bottomOffset: 0 },
   ]),
 
-  // 30. Ketāb (Book) - کتاب
-  createWord(30, 'Book', 'Ketāb', [
-    { char: '\u0643\u200D', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Kaf
+  // 30. Ketāb (Book)
+  createWord(30, 'Book', 'Ketāb', 'کتاب', [
+    { char: '\u0643\u200D', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
     {
       char: '\u200D\u066E\u200D',
       target: { top: 2, bottom: 0 },
       bottomOffset: 0,
-    }, // Te (Medial)
-    { char: '\uFE8E', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Alif
-    { char: '\u066E', target: { top: 0, bottom: 1 }, bottomOffset: 0 }, // Be (Final)
+    },
+    { char: '\uFE8E', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
+    { char: '\u066E', target: { top: 0, bottom: 1 }, bottomOffset: 0 },
   ]),
 
-  // 31. Panjereh (Window) - پنجره
-  createWord(31, 'Window', 'Panjereh', [
+  // 31. Panjereh (Window)
+  createWord(31, 'Window', 'Panjereh', 'پنجره', [
     {
       char: '\u066E\u200D',
       target: { top: 0, bottom: 3 },
       bottomOffset: bottomOffsetValue,
-    }, // Pe
+    },
     {
       char: '\u200D\u066E\u200D',
       target: { top: 1, bottom: 0 },
       bottomOffset: 0,
-    }, // Nun
+    },
     {
       char: '\u200D\u062D\u200D',
       target: { top: 0, bottom: 1 },
       bottomOffset: 0,
-    }, // Jim (Medial)
-    { char: '\uFEAE', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Re (Joined)
-    { char: '\u0647', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Heh (Final)
+    },
+    { char: '\uFEAE', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
+    { char: '\u0647', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
   ]),
 
   // 32. Namak (Salt) - نمک
-  createWord(32, 'Salt', 'Namak', [
+  createWord(32, 'Salt', 'Namak', 'نمک', [
     { char: '\u066E\u200D', target: { top: 1, bottom: 0 }, bottomOffset: 0 }, // Nun
     {
       char: '\u200D\u0645\u200D',
       target: { top: 0, bottom: 0 },
       bottomOffset: 0,
     }, // Mim
-    { char: '\u0643', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Kaf (Final)
+    {
+      // CHANGED: Used Persian Keheh (\u06A9) + Joiner (\u200D)
+      char: '\u200D\u06A9',
+      target: { top: 0, bottom: 0 },
+      bottomOffset: 0,
+    }, // Keheh (Final Joined)
   ]),
 
-  // 33. Dast (Hand) - دست
-  createWord(33, 'Hand', 'Dast', [
-    { char: '\u062F', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Dal
-    { char: '\u0633\u200D', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Sin (Medial)
-    { char: '\u200D\u066E', target: { top: 2, bottom: 0 }, bottomOffset: 0 }, // Te (Final Joined)
-  ]),
-
-  // 34. Gūsh (Ear) - گوش
-  createWord(34, 'Ear', 'Gūsh', [
-    { char: '\u06AF', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Gaf
-    { char: '\u0648', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Vav
+  // 34. Gūsh (Ear)
+  createWord(34, 'Ear', 'Gūsh', 'گوش', [
+    { char: '\u06AF', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
+    { char: '\u0648', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
     {
       char: '\u0633',
       target: { top: 3, bottom: 0 },
       topOffset: topShinOffset,
       topYOffset: -5,
-    }, // Shin (Final)
+    },
   ]),
 
-  // 35. Bist (Twenty) - بیست
-  createWord(35, 'Twenty', 'Bist', [
+  // 35. Bist (Twenty)
+  createWord(35, 'Twenty', 'Bist', 'بیست', [
     {
       char: '\u066E\u200D',
       target: { top: 0, bottom: 1 },
       bottomOffset: bottomOffsetValue,
-    }, // Be (Init)
+    },
     {
       char: '\u200D\u066E\u200D',
       target: { top: 0, bottom: 2 },
       bottomOffset: 0,
-    }, // Ye (Medial)
+    },
     {
       char: '\u200D\u0633\u200D',
       target: { top: 0, bottom: 0 },
       bottomOffset: 0,
-    }, // Sin (Medial)
-    { char: '\u200D\u066E', target: { top: 2, bottom: 0 }, bottomOffset: 0 }, // Te (Final Joined)
+    },
+    { char: '\u200D\u066E', target: { top: 2, bottom: 0 }, bottomOffset: 0 },
   ]),
 
-  // 36. Chashm (Eye) - چشم
-  createWord(36, 'Eye', 'Chashm', [
-    { char: '\u062D\u200D', target: { top: 0, bottom: 3 }, bottomOffset: 0 }, // Che (Init)
+  // 36. Chashm (Eye)
+  createWord(36, 'Eye', 'Chashm', 'چشم', [
+    { char: '\u062D\u200D', target: { top: 0, bottom: 3 }, bottomOffset: 0 },
     {
       char: '\u200D\u0633\u200D',
       target: { top: 3, bottom: 0 },
       topOffset: topShinOffset,
       topYOffset: -5,
-    }, // Shin (Medial)
-    { char: '\u200D\u0645', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Mim (Final)
+    },
+    { char: '\u200D\u0645', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
   ]),
 
-  // 37. Kafsh (Shoe) - کفش
-  createWord(37, 'Shoe', 'Kafsh', [
-    { char: '\u0643\u200D', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Kaf (Init)
+  // 37. Kafsh (Shoe)
+  createWord(37, 'Shoe', 'Kafsh', 'کفش', [
+    { char: '\u0643\u200D', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
     {
       char: '\u200D\u06A1\u200D',
       target: { top: 1, bottom: 0 },
       topYOffset: topFeOffset,
-    }, // Fe (Medial)
+    },
     {
       char: '\u200D\u0633',
       target: { top: 3, bottom: 0 },
       topOffset: topShinOffset,
       topYOffset: -5,
-    }, // Shin (Final)
+    },
   ]),
 
-  // 38. Zanbūr (Bee/Wasp) - زنبور
-  createWord(38, 'Bee', 'Zanbūr', [
-    { char: '\u0631', target: { top: 1, bottom: 0 }, bottomOffset: 0 }, // Ze
-    { char: '\u066E\u200D', target: { top: 1, bottom: 0 }, bottomOffset: 0 }, // Nun
+  // 38. Zanbūr (Bee)
+  createWord(38, 'Bee', 'Zanbūr', 'زنبور', [
+    { char: '\u0631', target: { top: 1, bottom: 0 }, bottomOffset: 0 },
+    { char: '\u066E\u200D', target: { top: 1, bottom: 0 }, bottomOffset: 0 },
     {
       char: '\u200D\u066E\u200D',
       target: { top: 0, bottom: 1 },
       bottomOffset: 0,
-    }, // Be
-    { char: '\u0648', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Vav
-    { char: '\u0631', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Re
+    },
+    { char: '\u0648', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
+    { char: '\u0631', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
   ]),
-  // 39. Khargūsh (Rabbit) - خرگوش
-  createWord(39, 'Rabbit', 'Khargūsh', [
+
+  // 39. Khargūsh (Rabbit)
+  createWord(39, 'Rabbit', 'Khargūsh', 'خرگوش', [
     {
       char: '\u062D\u200D',
       target: { top: 1, bottom: 0 },
       topYOffset: topKheOffset,
-    }, // Khe (Init)
-    { char: '\uFEAE', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Re (Joined)
-    { char: '\u06AF\u200D', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Gaf (New block, has line, 0 dots)
-    { char: '\uFEEE', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Vav (Joined)
+    },
+    { char: '\uFEAE', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
+    { char: '\u06AF\u200D', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
+    { char: '\uFEEE', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
     {
       char: '\u0633',
       target: { top: 3, bottom: 0 },
       topOffset: topShinOffset,
       topYOffset: -5,
-    }, // Shin (Final)
+    },
   ]),
 
-  // 40. Āftāb (Sunshine) - آفتاب
-  createWord(40, 'Sunshine', 'Āftāb', [
-    { char: '\u0622', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Alif Madda
+  // 40. Āftāb (Sunshine)
+  createWord(40, 'Sunshine', 'Āftāb', 'آفتاب', [
+    { char: '\u0622', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
     {
       char: '\u06A1\u200D',
       target: { top: 1, bottom: 0 },
       topYOffset: topFeOffset,
-    }, // Fe
+    },
     {
       char: '\u200D\u066E\u200D',
       target: { top: 2, bottom: 0 },
       bottomOffset: 0,
-    }, // Te
-    { char: '\uFE8E', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Alif
-    { char: '\u066E', target: { top: 0, bottom: 1 }, bottomOffset: 0 }, // Be (Final)
+    },
+    { char: '\uFE8E', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
+    { char: '\u066E', target: { top: 0, bottom: 1 }, bottomOffset: 0 },
   ]),
 
-  // 41. Tābestān (Summer) - تابستان
-  createWord(41, 'Summer', 'Tābestān', [
-    { char: '\u066E\u200D', target: { top: 2, bottom: 0 }, bottomOffset: 0 }, // Te
-    { char: '\uFE8E', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Alif
+  // 41. Tābestān (Summer)
+  createWord(41, 'Summer', 'Tābestān', 'تابستان', [
+    { char: '\u066E\u200D', target: { top: 2, bottom: 0 }, bottomOffset: 0 },
+    { char: '\uFE8E', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
     {
       char: '\u066E\u200D',
       target: { top: 0, bottom: 1 },
       bottomOffset: bottomOffsetValue,
-    }, // Be
+    },
     {
       char: '\u200D\u0633\u200D',
       target: { top: 0, bottom: 0 },
       bottomOffset: 0,
-    }, // Sin
+    },
     {
       char: '\u200D\u066E\u200D',
       target: { top: 2, bottom: 0 },
       bottomOffset: 0,
-    }, // Te
-    { char: '\uFE8E', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Alif
-    { char: '\u06BA', target: { top: 1, bottom: 0 }, bottomOffset: 0 }, // Nun
+    },
+    { char: '\uFE8E', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
+    { char: '\u06BA', target: { top: 1, bottom: 0 }, bottomOffset: 0 },
   ]),
 
-  // 42. Shīrīn (Sweet) - شیرین
-  createWord(42, 'Sweet', 'Shīrīn', [
+  // 42. Shīrīn (Sweet)
+  createWord(42, 'Sweet', 'Shīrīn', 'شیرین', [
     {
       char: '\u0633\u200D',
       target: { top: 3, bottom: 0 },
       topOffset: topShinOffset,
       topYOffset: -5,
-    }, // Shin
+    },
     {
       char: '\u200D\u066E\u200D',
       target: { top: 0, bottom: 2 },
       bottomOffset: 0,
-    }, // Ye
-    { char: '\u0631', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Re
-    { char: '\u066E\u200D', target: { top: 0, bottom: 2 }, bottomOffset: 0 }, // Ye
-    { char: '\u06BA', target: { top: 1, bottom: 0 }, bottomOffset: 0 }, // Nun
+    },
+    { char: '\u0631', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
+    { char: '\u066E\u200D', target: { top: 0, bottom: 2 }, bottomOffset: 0 },
+    { char: '\u06BA', target: { top: 1, bottom: 0 }, bottomOffset: 0 },
   ]),
 
-  // 43. Khorshīd (Sun) - خورشید
-  createWord(43, 'Sun', 'Khorshīd', [
+  // 43. Khorshīd (Sun)
+  createWord(43, 'Sun', 'Khorshīd', 'خورشید', [
     {
       char: '\u062D\u200D',
       target: { top: 1, bottom: 0 },
       topYOffset: topKheOffset,
-    }, // Khe
-    { char: '\u0648', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Vav
-    { char: '\u0631', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Re
+    },
+    { char: '\u0648', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
+    { char: '\u0631', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
     {
       char: '\u0633\u200D',
       target: { top: 3, bottom: 0 },
       topOffset: topShinOffset,
       topYOffset: -5,
-    }, // Shin
+    },
     {
       char: '\u200D\u066E\u200D',
       target: { top: 0, bottom: 2 },
       bottomOffset: 0,
-    }, // Ye
-    { char: '\u200D\u062F', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Dal
+    },
+    { char: '\u200D\u062F', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
   ]),
 
-  // 44. Chahārshanbe (Wednesday) - چهارشنبه
-  // A long word with two separate letter blocks.
-  createWord(44, 'Wednesday', 'Chahārshanbe', [
-    // --- Block 1: Chahā ---
-    { char: '\u062D\u200D', target: { top: 0, bottom: 3 }, bottomOffset: 0 }, // Che (Init)
+  // 44. Chahārshanbe (Wednesday)
+  createWord(44, 'Wednesday', 'Chahārshanbe', 'چهارشنبه', [
+    { char: '\u062D\u200D', target: { top: 0, bottom: 3 }, bottomOffset: 0 },
     {
       char: '\u200D\u0647\u200D',
       target: { top: 0, bottom: 0 },
       bottomOffset: 0,
-    }, // Heh (Medial)
-    { char: '\uFE8E', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Alif (Joined)
-    { char: '\u0631', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Re (Isolated)
-
-    // --- Block 2: Shanbe ---
+    },
+    { char: '\uFE8E', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
+    { char: '\u0631', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
     {
       char: '\u0633\u200D',
       target: { top: 3, bottom: 0 },
       topOffset: topShinOffset,
       topYOffset: -5,
-    }, // Shin (Init)
+    },
     {
       char: '\u200D\u066E\u200D',
       target: { top: 1, bottom: 0 },
       bottomOffset: 0,
-    }, // Nun (Medial)
+    },
     {
       char: '\u200D\u066E\u200D',
       target: { top: 0, bottom: 1 },
       bottomOffset: 0,
-    }, // Be (Medial)
-    { char: '\u0647', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Heh (Final)
+    },
+    { char: '\u0647', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
   ]),
 
-  // 45. Dīshab (Last night) - دیشب
-  createWord(45, 'Last Night', 'Dīshab', [
-    { char: '\u062F', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Dal
-    { char: '\u066E\u200D', target: { top: 0, bottom: 2 }, bottomOffset: 0 }, // Ye
+  // 45. Dīshab (Last Night)
+  createWord(45, 'Last Night', 'Dīshab', 'دیشب', [
+    { char: '\u062F', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
+    { char: '\u066E\u200D', target: { top: 0, bottom: 2 }, bottomOffset: 0 },
     {
       char: '\u200D\u0633\u200D',
       target: { top: 3, bottom: 0 },
       topOffset: topShinOffset,
       topYOffset: -5,
-    }, // Shin
-    { char: '\u200D\u066E', target: { top: 0, bottom: 1 }, bottomOffset: 0 }, // Be
+    },
+    { char: '\u200D\u066E', target: { top: 0, bottom: 1 }, bottomOffset: 0 },
   ]),
 
-  // 46. Sabz (Green) - سبز
-  createWord(46, 'Green', 'Sabz', [
-    { char: '\u0633\u200D', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Sin
+  // 46. Sabz (Green)
+  createWord(46, 'Green', 'Sabz', 'سبز', [
+    { char: '\u0633\u200D', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
     {
       char: '\u200D\u066E\u200D',
       target: { top: 0, bottom: 1 },
       bottomOffset: bottomOffsetValue,
-    }, // Be
-    { char: '\u0631', target: { top: 1, bottom: 0 }, bottomOffset: 0 }, // Ze
+    },
+    { char: '\u0631', target: { top: 1, bottom: 0 }, bottomOffset: 0 },
   ]),
 
-  // 47. Berenj (Rice) - برنج
-  createWord(47, 'Rice', 'Berenj', [
+  // 47. Berenj (Rice)
+  createWord(47, 'Rice', 'Berenj', 'برنج', [
     {
       char: '\u066E\u200D',
       target: { top: 0, bottom: 1 },
       bottomOffset: bottomOffsetValue,
-    }, // Be
-    { char: '\uFEAE', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Re
-    { char: '\u066E\u200D', target: { top: 1, bottom: 0 }, bottomOffset: 0 }, // Nun
-    { char: '\u200D\u062D', target: { top: 0, bottom: 1 }, bottomOffset: 0 }, // Jim
+    },
+    { char: '\uFEAE', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
+    { char: '\u066E\u200D', target: { top: 1, bottom: 0 }, bottomOffset: 0 },
+    { char: '\u200D\u062D', target: { top: 0, bottom: 1 }, bottomOffset: 0 },
   ]),
 
-  // 48. Mīz (Table) - میز
-  createWord(48, 'Table', 'Mīz', [
-    { char: '\u0645\u200D', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Mim (Init)
+  // 48. Mīz (Table)
+  createWord(48, 'Table', 'Mīz', 'میز', [
+    { char: '\u0645\u200D', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
     {
       char: '\u200D\u066E\u200D',
       target: { top: 0, bottom: 2 },
       bottomOffset: 0,
-    }, // Ye (Medial)
-    { char: '\u0632', target: { top: 1, bottom: 0 }, bottomOffset: 0 }, // Ze (Final)
+    },
+    { char: '\u0632', target: { top: 1, bottom: 0 }, bottomOffset: 0 },
   ]),
 
-  // 49. Chetr (Umbrella) - چتر
-  createWord(49, 'Umbrella', 'Chatr', [
-    { char: '\u062D\u200D', target: { top: 0, bottom: 3 }, bottomOffset: 0 }, // Che (Init)
+  // 49. Chetr (Umbrella)
+  createWord(49, 'Umbrella', 'Chatr', 'چتر', [
+    { char: '\u062D\u200D', target: { top: 0, bottom: 3 }, bottomOffset: 0 },
     {
       char: '\u200D\u066E\u200D',
       target: { top: 2, bottom: 0 },
       bottomOffset: 0,
-    }, // Te (Medial)
-    { char: '\uFEAE', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Re (Joined)
+    },
+    { char: '\uFEAE', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
   ]),
 
-  // 50. Pūl (Money) - پول
-  createWord(50, 'Money', 'Pūl', [
+  // 50. Pūl (Money)
+  createWord(50, 'Money', 'Pūl', 'پول', [
     {
       char: '\u066E\u200D',
       target: { top: 0, bottom: 3 },
       bottomOffset: bottomOffsetValue,
-    }, // Pe (Init)
-    { char: '\uFEEE', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Vav (Joined)
-    { char: '\u0644', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Lam (Isolated)
+    },
+    { char: '\uFEEE', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
+    { char: '\u0644', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
   ]),
 ];

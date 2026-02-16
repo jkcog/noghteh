@@ -10,6 +10,11 @@ export const useGameLogic = () => {
   const [showHints, setShowHints] = useState(false);
   const [gameState, setGameState] = useState('playing');
 
+  const [isHardMode, setIsHardMode] = useState(() => {
+    const saved = localStorage.getItem('noghteh_hard_mode');
+    return saved === 'true';
+  });
+
   const [boardState, setBoardState] = useState(() => {
     const word = WORDS[currentWordIndex];
     const initialBoard = {};
@@ -25,6 +30,14 @@ export const useGameLogic = () => {
   const currentWord = WORDS[currentWordIndex];
   const dotsRemaining = currentWord ? currentWord.dotAllowance - dotsPlaced : 0;
   const hintTimerRef = useRef(null);
+
+  const toggleHardMode = useCallback(() => {
+    setIsHardMode((prev) => {
+      const nextValue = !prev;
+      localStorage.setItem('noghteh_hard_mode', nextValue);
+      return nextValue;
+    });
+  }, []);
 
   const loadWord = useCallback((index) => {
     const word = WORDS[index];
@@ -58,7 +71,7 @@ export const useGameLogic = () => {
       if (nextValue === true) {
         hintTimerRef.current = setTimeout(() => {
           setShowHints(false);
-        }, 5000);
+        }, 4500);
       }
 
       return nextValue;
@@ -70,7 +83,6 @@ export const useGameLogic = () => {
 
     const currentDotsInZone = boardState[id][position];
 
-    // Zone full
     if (currentDotsInZone >= 3) {
       setBoardState((prev) => ({
         ...prev,
@@ -83,7 +95,6 @@ export const useGameLogic = () => {
       return;
     }
 
-    // Add Dot
     if (dotsRemaining > 0) {
       setBoardState((prev) => ({
         ...prev,
@@ -91,19 +102,15 @@ export const useGameLogic = () => {
       }));
       setDotsPlaced((prev) => prev + 1);
       setHistory((prev) => [...prev, { id, position }]);
-    }
-    // Steal Dot
-    else {
+    } else {
       if (history.length === 0) return;
       const oldestMove = history[0];
 
       setBoardState((prev) => {
         const nextState = { ...prev };
-
         if (!nextState[oldestMove.id]) return prev;
 
         const oldZoneCount = nextState[oldestMove.id][oldestMove.position];
-
         nextState[oldestMove.id] = {
           ...nextState[oldestMove.id],
           [oldestMove.position]: Math.max(0, oldZoneCount - 1),
@@ -164,9 +171,7 @@ export const useGameLogic = () => {
     } else {
       setGameState('error');
       setIsShaking(true);
-
       setTimeout(() => setIsShaking(false), 600);
-
       setTimeout(() => {
         setGameState('playing');
         const initial = {};
@@ -187,6 +192,8 @@ export const useGameLogic = () => {
     gameState,
     isShaking,
     showHints,
+    isHardMode,
+    toggleHardMode,
     toggleHints,
     handleNextWord,
     handleZoneClick,
