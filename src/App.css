@@ -167,7 +167,7 @@
   color: white;
   border: none;
   border-radius: 5px;
-  margin-top: 20px;
+  margin-top: 15px;
 }
 
 .btn.disabled {
@@ -176,7 +176,7 @@
 
 .btn-restart {
   background-color: #333;
-  margin-top: 20px;
+  margin-top: 15px;
 }
 
 @keyframes shake {
