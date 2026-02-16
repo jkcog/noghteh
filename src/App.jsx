@@ -29,7 +29,7 @@ export default function NoghtehGame() {
           </strong>
         </p>
         <p style={{ fontSize: '0.9rem', color: '#666' }}>
-          Click above or below the teeth to place dots.
+          .Click above or below the teeth to place dots
         </p>
       </div>
 
@@ -65,6 +65,7 @@ export default function NoghtehGame() {
         <button
           className={`btn ${dotsRemaining === 0 ? '' : 'disabled'}`}
           onClick={checkWin}
+          disabled={dotsRemaining !== 0}
         >
           Check Word
         </button>
@@ -73,6 +74,29 @@ export default function NoghtehGame() {
           Next Word &rarr;
         </button>
       )}
+
+      <footer className="footer">
+        <div className="footer-content">
+          <span>Created by </span>
+          <a
+            href="https://github.com/jkcog"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="footer-link"
+          >
+            Jack Coggin
+          </a>
+          <span className="separator">•</span>
+          <a
+            href="https://github.com/jkcog/noghteh"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="footer-link"
+          >
+            View Source
+          </a>
+        </div>
+      </footer>
     </div>
   );
 }
