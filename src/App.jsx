@@ -1,7 +1,8 @@
 import './App.css';
 import { useGameLogic } from './hooks/useGameLogic';
 import { Inventory } from './components/Inventory';
-import { LetterColumn } from './components/LetterColumn';
+import { GameInterface } from './components/GameInterface';
+import { LightbulbIcon } from './components/LightbulbIcon';
 
 export default function NoghtehGame() {
   const {
@@ -14,6 +15,8 @@ export default function NoghtehGame() {
     handleRightClick,
     isShaking,
     checkWin,
+    showHints,
+    toggleHints,
   } = useGameLogic();
 
   if (!currentWord) return <div>Loading...</div>;
@@ -28,9 +31,15 @@ export default function NoghtehGame() {
             {currentWord.transliteration} ({currentWord.translation})
           </strong>
         </p>
-        <p style={{ fontSize: '0.9rem', color: '#666' }}>
-          .Click above or below the teeth to place dots
-        </p>
+
+        <button
+          className={`btn-hint-icon ${showHints ? 'active' : ''}`} // New class name
+          onClick={toggleHints}
+          aria-label={showHints ? 'Hide Hints' : 'Show Hints'} // Critical for accessibility
+          title={showHints ? 'Hide Hints' : 'Show Hints'} // Tooltip for mouse users
+        >
+          <LightbulbIcon filled={showHints} />
+        </button>
       </div>
 
       <Inventory
@@ -38,20 +47,15 @@ export default function NoghtehGame() {
         dotsRemaining={dotsRemaining}
       />
 
-      <div
-        className={`game-board ${gameState === 'won' ? 'won' : ''} ${isShaking ? 'shake' : ''}`}
-      >
-        {currentWord.letters.map((letter, index) => (
-          <LetterColumn
-            key={letter.id}
-            index={index}
-            letter={letter}
-            boardStateForLetter={boardState[letter.id] || { top: 0, bottom: 0 }}
-            handleZoneClick={handleZoneClick}
-            handleRightClick={handleRightClick}
-          />
-        ))}
-      </div>
+      <GameInterface
+        currentWord={currentWord}
+        boardState={boardState}
+        handleZoneClick={handleZoneClick}
+        handleRightClick={handleRightClick}
+        gameState={gameState}
+        isShaking={isShaking}
+        showHints={showHints}
+      />
 
       <div className={`message ${gameState}`}>
         {gameState === 'won'

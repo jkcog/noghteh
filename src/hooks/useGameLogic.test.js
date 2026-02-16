@@ -100,4 +100,35 @@ describe('useGameLogic', () => {
       expect(result.current.gameState).toBe('error');
     });
   });
+
+  describe('When using the Hint System', () => {
+    it('should start with hints disabled', () => {
+      const { result } = renderHook(() => useGameLogic());
+      expect(result.current.showHints).toBe(false);
+    });
+
+    it('should toggle hints on and off', () => {
+      const { result } = renderHook(() => useGameLogic());
+      act(() => {
+        result.current.toggleHints();
+      });
+      expect(result.current.showHints).toBe(true);
+      act(() => {
+        result.current.toggleHints();
+      });
+      expect(result.current.showHints).toBe(false);
+    });
+
+    it('should automatically disable hints when moving to the next word', () => {
+      const { result } = renderHook(() => useGameLogic());
+      act(() => {
+        result.current.toggleHints();
+      });
+      expect(result.current.showHints).toBe(true);
+      act(() => {
+        result.current.handleNextWord();
+      });
+      expect(result.current.showHints).toBe(false);
+    });
+  });
 });

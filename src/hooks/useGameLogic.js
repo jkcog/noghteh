@@ -3,9 +3,12 @@ import { WORDS } from '../wordList';
 
 export const useGameLogic = () => {
   const [currentWordIndex, setCurrentWordIndex] = useState(() =>
-    Math.floor(Math.random() * WORDS.length),
+    Math.floor(Math.random() * WORDS.length)
   );
+
   const [isShaking, setIsShaking] = useState(false);
+  const [showHints, setShowHints] = useState(false);
+  const [gameState, setGameState] = useState('playing');
 
   const [boardState, setBoardState] = useState(() => {
     const word = WORDS[currentWordIndex];
@@ -18,8 +21,6 @@ export const useGameLogic = () => {
 
   const [dotsPlaced, setDotsPlaced] = useState(0);
   const [history, setHistory] = useState([]);
-
-  const [gameState, setGameState] = useState('playing');
 
   const currentWord = WORDS[currentWordIndex];
   const dotsRemaining = currentWord ? currentWord.dotAllowance - dotsPlaced : 0;
@@ -36,11 +37,16 @@ export const useGameLogic = () => {
     setDotsPlaced(0);
     setHistory([]);
     setGameState('playing');
+    setShowHints(false);
   }, []);
 
   const handleNextWord = () => {
     const nextIndex = (currentWordIndex + 1) % WORDS.length;
     loadWord(nextIndex);
+  };
+
+  const toggleHints = () => {
+    setShowHints((prev) => !prev);
   };
 
   const handleZoneClick = (id, position) => {
@@ -61,7 +67,7 @@ export const useGameLogic = () => {
       return;
     }
 
-    // Add Dot (Normal)
+    // Add Dot
     if (dotsRemaining > 0) {
       setBoardState((prev) => ({
         ...prev,
@@ -77,15 +83,16 @@ export const useGameLogic = () => {
 
       setBoardState((prev) => {
         const nextState = { ...prev };
+        
+        if (!nextState[oldestMove.id]) return prev; 
+
         const oldZoneCount = nextState[oldestMove.id][oldestMove.position];
 
-        // Remove from old
         nextState[oldestMove.id] = {
           ...nextState[oldestMove.id],
           [oldestMove.position]: Math.max(0, oldZoneCount - 1),
         };
 
-        // Add to new
         const currentZoneCount = nextState[id][position];
         nextState[id] = {
           ...nextState[id],
@@ -109,6 +116,7 @@ export const useGameLogic = () => {
         [id]: { ...prev[id], [position]: currentDots - 1 },
       }));
       setDotsPlaced((d) => d - 1);
+      
       setHistory((prev) => {
         const indexToRemove = prev
           .map((m) => m.id === id && m.position === position)
@@ -141,9 +149,7 @@ export const useGameLogic = () => {
       setGameState('error');
       setIsShaking(true);
 
-      setTimeout(() => {
-        setIsShaking(false);
-      }, 600);
+      setTimeout(() => setIsShaking(false), 600);
 
       setTimeout(() => {
         setGameState('playing');
@@ -163,10 +169,12 @@ export const useGameLogic = () => {
     boardState,
     dotsRemaining,
     gameState,
+    isShaking,
+    showHints,
+    toggleHints,
     handleNextWord,
     handleZoneClick,
     handleRightClick,
-    isShaking,
     checkWin,
   };
 };
