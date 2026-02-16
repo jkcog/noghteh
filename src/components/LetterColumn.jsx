@@ -11,13 +11,17 @@ export const LetterColumn = ({
 }) => {
   const bottomOffset = letter.bottomOffset || 0;
   const topOffset = letter.topOffset || 0;
+  const topYOffset = letter.topYOffset || 0;
 
   return (
     <div className="letter-container" style={{ zIndex: 100 - index }}>
       {/* TOP ZONE */}
       <div
         className="dot-zone top-zone"
-        style={{ transform: `translateX(calc(-50% + ${topOffset}px))` }}
+        style={{
+          transform: `translateX(calc(-50% + ${topOffset}px))`,
+          top: `calc(-10px + ${topYOffset}px)`,
+        }}
         onClick={() => handleZoneClick(letter.id, 'top')}
         onContextMenu={(e) => handleRightClick(e, letter.id, 'top')}
       >

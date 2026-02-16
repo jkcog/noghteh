@@ -45,6 +45,13 @@
   border-color: #4ade80;
 }
 
+@media (max-width: 768px) {
+  .game-board {
+    margin-bottom: 2rem;
+    padding: 40px;
+  }
+}
+
 /* --- Letters --- */
 .letter-container {
   position: relative;
@@ -67,6 +74,12 @@
     'liga' 1,
     'calt' 1;
   text-rendering: optimizeLegibility;
+}
+
+@media (max-width: 768px) {
+  .character {
+    font-size: 65px;
+  }
 }
 
 /* --- Click Zones --- */
@@ -268,6 +281,16 @@
   font-size: 1.5rem;
   font-weight: bold;
   height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin-bottom: 1rem;
+}
+
+.message span:first-child {
+  font-size: 1.2rem;
+  font-weight: 400;
 }
 
 .message.won {

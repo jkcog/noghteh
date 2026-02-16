@@ -30,10 +30,8 @@ export default function NoghtehGame() {
           to remove.
         </p>
         <p>
-          Target:{' '}
-          <strong>
-            {currentWord.transliteration} ({currentWord.translation})
-          </strong>
+          Target: <strong>{currentWord.transliteration}</strong> (
+          {currentWord.translation})
         </p>
 
         <button
@@ -65,11 +63,16 @@ export default function NoghtehGame() {
       />
 
       <div className={`message ${gameState}`}>
-        {gameState === 'won'
-          ? 'آفرین! (!Well done)'
-          : gameState === 'error'
-            ? '.Incorrect, try again'
-            : ''}
+        {gameState === 'won' ? (
+          <>
+            <span>(!Well done)</span>
+            <span>آفرین!</span>
+          </>
+        ) : gameState === 'error' ? (
+          '.Incorrect, try again'
+        ) : (
+          ''
+        )}
       </div>
 
       {gameState !== 'won' ? (

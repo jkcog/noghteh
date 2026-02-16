@@ -1,4 +1,3 @@
-import React from 'react';
 import { LetterColumn } from './LetterColumn';
 
 export const GameInterface = ({ 
