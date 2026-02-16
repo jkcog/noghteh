@@ -1,4 +1,3 @@
-import React from 'react';
 import { DotCluster } from './DotCluster';
 
 export const LetterColumn = ({
@@ -12,6 +11,7 @@ export const LetterColumn = ({
   const bottomOffset = letter.bottomOffset || 0;
   const topOffset = letter.topOffset || 0;
   const topYOffset = letter.topYOffset || 0;
+  const bottomYOffset = letter.bottomYOffset || 0;
 
   return (
     <div className="letter-container" style={{ zIndex: 100 - index }}>
@@ -41,7 +41,10 @@ export const LetterColumn = ({
       {/* BOTTOM ZONE */}
       <div
         className="dot-zone bottom-zone"
-        style={{ transform: `translateX(calc(-50% + ${bottomOffset}px))` }}
+        style={{
+          transform: `translateX(calc(-50% + ${bottomOffset}px))`,
+          marginBottom: `${bottomYOffset}px`,
+        }}
         onClick={() => handleZoneClick(letter.id, 'bottom')}
         onContextMenu={(e) => handleRightClick(e, letter.id, 'bottom')}
       >

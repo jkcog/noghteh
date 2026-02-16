@@ -7,7 +7,7 @@ const createWord = (id, translation, transliteration, persian, letters) => {
     id,
     translation,
     transliteration,
-    persian, // for tts
+    persian,
     dotAllowance,
     letters: letters.map((l, index) => ({ ...l, id: index })),
   };
@@ -17,6 +17,7 @@ const bottomOffsetValue = -5;
 const topShinOffset = 10;
 const topFeOffset = -12;
 const topKheOffset = -15;
+const jimOffset = 20;
 
 export const WORDS = [
   // 1. Bābā (Dad)
@@ -619,7 +620,12 @@ export const WORDS = [
     },
     { char: '\uFEAE', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
     { char: '\u066E\u200D', target: { top: 1, bottom: 0 }, bottomOffset: 0 },
-    { char: '\u200D\u062D', target: { top: 0, bottom: 1 }, bottomOffset: 0 },
+    {
+      char: '\u200D\u062D',
+      target: { top: 0, bottom: 1 },
+      bottomOffset: 0,
+      bottomYOffset: jimOffset,
+    },
   ]),
 
   // 48. Mīz (Table)
