@@ -132,7 +132,7 @@ export const useGameLogic = () => {
     playSfx('pop');
 
     if (navigator.vibrate) {
-      navigator.vibrate(10);
+      navigator.vibrate(200);
     }
 
     if (currentDotsInZone >= 3) {
