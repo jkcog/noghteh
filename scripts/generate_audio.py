@@ -36,7 +36,6 @@ words = {
     30: "کتاب",   # Ketab
     31: "پنجره",  # Panjereh
     32: "نمک",    # Namak
-    33: "دست",    # Dast
     34: "گوش",    # Gush
     35: "بیست",   # Bist
     36: "چشم",    # Chashm
@@ -54,6 +53,16 @@ words = {
     48: "میز",    # Miz
     49: "چتر",    # Chetr
     50: "پول",    # Pul
+    51: "دست",    # Dast
+    52: "پسته",   # Pesteh
+    53: "گربه",   # Gorbeh
+    54: "ماشین",  # Mashin
+    55: "انجیر",  # Anjir
+    56: "خرس",    # Khers
+    57: "قلب",    # Ghalb
+    58: "کیف",    # Kif
+    59: "کباب",   # Kebab
+    60: "عنکبوت", # Ankabut
 }
 
 async def main():
