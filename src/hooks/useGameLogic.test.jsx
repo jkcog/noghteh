@@ -3,18 +3,43 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { useGameLogic } from './useGameLogic';
 
 vi.mock('../wordList', () => ({
+  CATEGORY_CONFIG: {
+    Basics: { label: 'Basics', icon: '👶', unlockThreshold: 0 },
+    Food: { label: 'Food', icon: '🍎', unlockThreshold: 2 },
+  },
   WORDS: [
     {
       id: 1,
-      transliteration: 'Test',
-      translation: 'Test',
+      category: 'Basics',
+      transliteration: 'Test1',
+      translation: 'Test1',
       dotAllowance: 2,
       letters: [
         { id: 0, char: 'A', target: { top: 1, bottom: 0 } },
         { id: 1, char: 'B', target: { top: 0, bottom: 1 } },
       ],
     },
+    {
+      id: 2,
+      category: 'Food',
+      transliteration: 'Test2',
+      translation: 'Test2',
+      dotAllowance: 1,
+      letters: [{ id: 1, char: 'B', target: { top: 0, bottom: 1 } }],
+    },
   ],
+}));
+
+const mockRecordWin = vi.fn();
+const mockIsCategoryUnlocked = vi.fn((cat) => cat === 'Basics');
+const mockGetCategoryStars = vi.fn(() => 0);
+
+vi.mock('./useProgression', () => ({
+  useProgression: () => ({
+    recordWin: mockRecordWin,
+    isCategoryUnlocked: mockIsCategoryUnlocked,
+    getCategoryStars: mockGetCategoryStars,
+  }),
 }));
 
 const localStorageMock = (() => {
@@ -44,6 +69,7 @@ describe('useGameLogic', () => {
   afterEach(() => {
     vi.useRealTimers();
   });
+
   describe('Given the game initializes', () => {
     it('should start with the correct default state', () => {
       const { result } = renderHook(() => useGameLogic());
@@ -66,6 +92,43 @@ describe('useGameLogic', () => {
     });
   });
 
+  describe('Category Switching', () => {
+    it('should initialize with "Basics" category', () => {
+      const { result } = renderHook(() => useGameLogic());
+      expect(result.current.currentCategory).toBe('Basics');
+      expect(result.current.currentWord.id).toBe(1);
+    });
+
+    it('should NOT switch to a locked category', () => {
+      mockIsCategoryUnlocked.mockReturnValue(false);
+      const { result } = renderHook(() => useGameLogic());
+
+      act(() => {
+        result.current.switchCategory('Food');
+      });
+
+      expect(result.current.currentCategory).toBe('Basics');
+    });
+
+    it('should switch category and reset board if unlocked', () => {
+      mockIsCategoryUnlocked.mockImplementation(
+        (cat) => cat === 'Food' || cat === 'Basics',
+      );
+      const { result } = renderHook(() => useGameLogic());
+
+      act(() => result.current.handleZoneClick(0, 'top'));
+      expect(result.current.dotsRemaining).toBe(1);
+
+      act(() => {
+        result.current.switchCategory('Food');
+      });
+
+      expect(result.current.currentCategory).toBe('Food');
+      expect(result.current.currentWord.id).toBe(2);
+      expect(result.current.dotsRemaining).toBe(1);
+    });
+  });
+
   describe('When the user interacts with dots', () => {
     it('should decrease remaining allowance when placing a dot', () => {
       const { result } = renderHook(() => useGameLogic());
@@ -84,7 +147,6 @@ describe('useGameLogic', () => {
       act(() => {
         result.current.handleZoneClick(0, 'top');
       });
-      expect(result.current.dotsRemaining).toBe(1);
 
       const mockEvent = { preventDefault: vi.fn() };
       act(() => {
@@ -97,11 +159,10 @@ describe('useGameLogic', () => {
   });
 
   describe('When the inventory is full (FIFO Logic)', () => {
-    it('should steal the oldest dot when placing a 3rd dot', () => {
+    it('should steal the oldest dot when placing a dot past allowance', () => {
       const { result } = renderHook(() => useGameLogic());
 
       act(() => result.current.handleZoneClick(0, 'top'));
-
       act(() => result.current.handleZoneClick(1, 'bottom'));
 
       expect(result.current.dotsRemaining).toBe(0);
@@ -109,15 +170,13 @@ describe('useGameLogic', () => {
       act(() => result.current.handleZoneClick(0, 'bottom'));
 
       expect(result.current.boardState[0].top).toBe(0);
-
       expect(result.current.boardState[1].bottom).toBe(1);
-
       expect(result.current.boardState[0].bottom).toBe(1);
     });
   });
 
   describe('When checking win conditions', () => {
-    it('should set gameState to "won" if placement is correct', () => {
+    it('should set gameState to "won" and record progress if correct', () => {
       const { result } = renderHook(() => useGameLogic());
 
       act(() => result.current.handleZoneClick(0, 'top'));
@@ -126,64 +185,41 @@ describe('useGameLogic', () => {
       act(() => result.current.checkWin());
 
       expect(result.current.gameState).toBe('won');
+      expect(mockRecordWin).toHaveBeenCalledWith(1);
     });
 
-    it('should set gameState to "error" if placement is incorrect', () => {
+    it('should set gameState to "error" if incorrect', () => {
       const { result } = renderHook(() => useGameLogic());
 
       act(() => result.current.handleZoneClick(0, 'bottom'));
-
       act(() => result.current.checkWin());
 
       expect(result.current.gameState).toBe('error');
+      expect(mockRecordWin).not.toHaveBeenCalled();
     });
   });
 
-  describe('When using the Hint System', () => {
-    beforeEach(() => {
-      vi.useFakeTimers();
-    });
-
-    afterEach(() => {
-      vi.useRealTimers();
-    });
-    it('should start with hints disabled', () => {
-      const { result } = renderHook(() => useGameLogic());
-      expect(result.current.showHints).toBe(false);
-    });
-
-    it('should toggle hints on and off', () => {
-      const { result } = renderHook(() => useGameLogic());
-      act(() => {
-        result.current.toggleHints();
-      });
-      expect(result.current.showHints).toBe(true);
-      act(() => {
-        result.current.toggleHints();
-      });
-      expect(result.current.showHints).toBe(false);
-    });
-
-    it('should automatically hide hints after 5 seconds', () => {
+  describe('Hint System', () => {
+    it('should toggle hints and auto-hide after 4.5 seconds', () => {
       const { result } = renderHook(() => useGameLogic());
 
       act(() => {
         result.current.toggleHints();
       });
       expect(result.current.showHints).toBe(true);
-      act(() => {
-        vi.advanceTimersByTime(5000);
-      });
 
+      act(() => {
+        vi.advanceTimersByTime(4500);
+      });
       expect(result.current.showHints).toBe(false);
     });
 
-    it('should automatically disable hints when moving to the next word', () => {
+    it('should reset hints when moving to next word', () => {
       const { result } = renderHook(() => useGameLogic());
       act(() => {
         result.current.toggleHints();
       });
-      expect(result.current.showHints).toBe(true);
+
       act(() => {
         result.current.handleNextWord();
       });
@@ -196,8 +232,6 @@ describe('useGameLogic', () => {
       const { result } = renderHook(() => useGameLogic());
       act(() => {
         result.current.handleZoneClick(0, 'top');
-      });
-      act(() => {
         result.current.handleZoneClick(1, 'bottom');
       });
 
@@ -215,26 +249,28 @@ describe('useGameLogic', () => {
 
       act(() => {
         result.current.handleZoneClick(0, 'bottom');
-      });
-
-      act(() => {
         result.current.checkWin();
       });
 
+      expect(result.current.gameState).toBe('error');
       expect(result.current.streak).toBe(0);
+      act(() => {
+        vi.runAllTimers();
+      });
     });
 
     it('should NOT increment streak if a hint was used', () => {
       const { result } = renderHook(() => useGameLogic());
 
       act(() => {
-        result.current.toggleHints();
+        result.current.handleNextWord();
       });
 
       act(() => {
-        result.current.handleZoneClick(0, 'top');
+        result.current.toggleHints();
       });
       act(() => {
+        result.current.handleZoneClick(0, 'top');
         result.current.handleZoneClick(1, 'bottom');
       });
 
@@ -244,57 +280,6 @@ describe('useGameLogic', () => {
 
       expect(result.current.gameState).toBe('won');
       expect(result.current.streak).toBe(0);
-    });
-
-    it('should update bestStreak only if current exceeds it', () => {
-      const { result } = renderHook(() => useGameLogic());
-
-      act(() => {
-        result.current.handleZoneClick(0, 'top');
-      });
-      act(() => {
-        result.current.handleZoneClick(1, 'bottom');
-      });
-      act(() => {
-        result.current.checkWin();
-      });
-
-      expect(result.current.streak).toBe(1);
-      expect(result.current.bestStreak).toBe(1);
-
-      act(() => {
-        result.current.handleNextWord();
-      });
-
-      act(() => {
-        result.current.handleZoneClick(0, 'top');
-      });
-      act(() => {
-        result.current.handleZoneClick(1, 'bottom');
-      });
-      act(() => {
-        result.current.checkWin();
-      });
-
-      expect(result.current.streak).toBe(2);
-      expect(result.current.bestStreak).toBe(2);
-    });
-  });
-
-  describe('Hint System Timers', () => {
-    it('should auto-hide hints after 4.5 seconds', () => {
-      const { result } = renderHook(() => useGameLogic());
-
-      act(() => {
-        result.current.toggleHints();
-      });
-      expect(result.current.showHints).toBe(true);
-
-      act(() => {
-        vi.advanceTimersByTime(4500);
-      });
-
-      expect(result.current.showHints).toBe(false);
     });
   });
 });

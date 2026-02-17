@@ -5,10 +5,10 @@ import { usePersianAudio } from './hooks/usePersianAudio';
 import { useSoundEffects } from './hooks/useSoundEffects';
 import { Inventory } from './components/Inventory';
 import { GameInterface } from './components/GameInterface';
+import { CategoryToolbar } from './components/CategoryToolbar';
 import { LightbulbIcon } from './components/Icons/LightbulbIcon';
 import { SpeakerIcon } from './components/Icons/SpeakerIcon';
 import { EyeClosed, EyeOpen } from './components/Icons/EyeIcon';
-import { FireIcon, TrophyIcon } from './components/Icons/ScoreIcon';
 
 export default function NoghtehGame() {
   const {
@@ -27,6 +27,10 @@ export default function NoghtehGame() {
     toggleHardMode,
     streak,
     bestStreak,
+    currentCategory,
+    switchCategory,
+    getCategoryStars,
+    isCategoryUnlocked,
   } = useGameLogic();
 
   const playAudio = usePersianAudio();
@@ -44,34 +48,15 @@ export default function NoghtehGame() {
 
   return (
     <div className="container">
+      <CategoryToolbar
+        streak={streak}
+        bestStreak={bestStreak}
+        currentCategory={currentCategory}
+        onSelectCategory={switchCategory}
+        getCategoryStars={getCategoryStars}
+        isCategoryUnlocked={isCategoryUnlocked}
+      />
       <div className="header">
-        <div className="stats-bar">
-          <div
-            className={`stat-item ${streak > 0 ? 'streak-pop' : ''}`}
-            key={streak}
-            title="Current Score"
-          >
-            <FireIcon active={streak > 0} />
-            <span className={`stat-value ${streak > 0 ? 'active-fire' : ''}`}>
-              {streak}
-            </span>
-          </div>
-
-          <div className="stat-divider"></div>
-
-          <div
-            className={`stat-item ${bestStreak > 0 ? 'trophy-shine' : ''}`}
-            key={`best-${bestStreak}`}
-            title="Best Score"
-          >
-            <TrophyIcon active={bestStreak > 0} />
-            <span
-              className={`stat-value ${bestStreak > 0 ? 'active-gold' : ''}`}
-            >
-              {bestStreak}
-            </span>
-          </div>
-        </div>
         <h1>نقطه Noghteh</h1>
         <p className="instructions">
           Place the correct dots on the letters. Left-click to add, right-click

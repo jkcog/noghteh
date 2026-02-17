@@ -1,15 +1,26 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useMemo } from 'react';
 import { useSoundEffects } from './useSoundEffects';
-import { WORDS } from '../wordList';
+import { useProgression } from './useProgression';
+import { WORDS, CATEGORY_CONFIG } from '../wordList';
 
 export const useGameLogic = () => {
+  const [currentCategory, setCurrentCategory] = useState('Basics');
+  const { recordWin, getCategoryStars, isCategoryUnlocked } = useProgression();
+
+  const activeWordList = useMemo(() => {
+    return WORDS.filter((w) => w.category === currentCategory);
+  }, [currentCategory]);
+
   const [currentWordIndex, setCurrentWordIndex] = useState(() =>
-    Math.floor(Math.random() * WORDS.length),
+    Math.floor(Math.random() * activeWordList.length),
   );
+
+  const currentWord = activeWordList[currentWordIndex] || activeWordList[0];
 
   const [isShaking, setIsShaking] = useState(false);
   const [showHints, setShowHints] = useState(false);
   const [gameState, setGameState] = useState('playing');
+
   const [streak, setStreak] = useState(() => {
     return parseInt(localStorage.getItem('noghteh_streak') || '0');
   });
@@ -19,12 +30,11 @@ export const useGameLogic = () => {
   });
 
   const [isHardMode, setIsHardMode] = useState(() => {
-    const saved = localStorage.getItem('noghteh_hard_mode');
-    return saved === 'true';
+    return localStorage.getItem('noghteh_hard_mode') === 'true';
   });
 
   const [boardState, setBoardState] = useState(() => {
-    const word = WORDS[currentWordIndex];
+    const word = activeWordList[currentWordIndex] || activeWordList[0];
     const initialBoard = {};
     word.letters.forEach((l) => {
       initialBoard[l.id] = { top: 0, bottom: 0 };
@@ -35,11 +45,8 @@ export const useGameLogic = () => {
   const [dotsPlaced, setDotsPlaced] = useState(0);
   const [history, setHistory] = useState([]);
 
-  const currentWord = WORDS[currentWordIndex];
   const dotsRemaining = currentWord ? currentWord.dotAllowance - dotsPlaced : 0;
   const hintTimerRef = useRef(null);
-
-  // Track purity of the current round (using refs so they don't trigger re-renders)
   const usedHintRef = useRef(false);
   const madeMistakeRef = useRef(false);
 
@@ -53,45 +60,67 @@ export const useGameLogic = () => {
     });
   }, []);
 
-  const loadWord = useCallback((index) => {
-    const word = WORDS[index];
+  const loadWord = useCallback(
+    (index) => {
+      const word = activeWordList[index];
+      const initialBoard = {};
+      word.letters.forEach((l) => {
+        initialBoard[l.id] = { top: 0, bottom: 0 };
+      });
+
+      usedHintRef.current = false;
+      madeMistakeRef.current = false;
+      setCurrentWordIndex(index);
+      setBoardState(initialBoard);
+      setDotsPlaced(0);
+      setHistory([]);
+      setGameState('playing');
+      setShowHints(false);
+    },
+    [activeWordList],
+  );
+
+  const switchCategory = (newCategory) => {
+    if (newCategory === currentCategory) return;
+    if (!isCategoryUnlocked(newCategory)) return;
+
+    setCurrentCategory(newCategory);
+
+    const newWords = WORDS.filter((w) => w.category === newCategory);
+
+    const randomIndex = Math.floor(Math.random() * newWords.length);
+    const newWord = newWords[randomIndex];
+
+    setCurrentWordIndex(randomIndex);
+    setGameState('playing');
+    setDotsPlaced(0);
+    setHistory([]);
+    setShowHints(false);
+
     const initialBoard = {};
-    word.letters.forEach((l) => {
+    newWord.letters.forEach((l) => {
       initialBoard[l.id] = { top: 0, bottom: 0 };
     });
+    setBoardState(initialBoard);
 
     usedHintRef.current = false;
     madeMistakeRef.current = false;
-    setCurrentWordIndex(index);
-    setBoardState(initialBoard);
-    setDotsPlaced(0);
-    setHistory([]);
-    setGameState('playing');
-    setShowHints(false);
-  }, []);
+  };
 
   const handleNextWord = () => {
     if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
-    const nextIndex = (currentWordIndex + 1) % WORDS.length;
+    const nextIndex = Math.floor(Math.random() * activeWordList.length);
     loadWord(nextIndex);
   };
 
   const toggleHints = () => {
-    if (hintTimerRef.current) {
-      clearTimeout(hintTimerRef.current);
-    }
-
+    if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
     usedHintRef.current = true;
-
     setShowHints((prev) => {
       const nextValue = !prev;
-
       if (nextValue === true) {
-        hintTimerRef.current = setTimeout(() => {
-          setShowHints(false);
-        }, 4500);
+        hintTimerRef.current = setTimeout(() => setShowHints(false), 4500);
       }
-
       return nextValue;
     });
   };
@@ -159,7 +188,6 @@ export const useGameLogic = () => {
         [id]: { ...prev[id], [position]: currentDots - 1 },
       }));
       setDotsPlaced((d) => d - 1);
-
       setHistory((prev) => {
         const indexToRemove = prev
           .map((m) => m.id === id && m.position === position)
@@ -176,6 +204,7 @@ export const useGameLogic = () => {
 
   const checkWin = () => {
     let isWin = true;
+
     currentWord.letters.forEach((letter) => {
       const current = boardState[letter.id];
       if (
@@ -189,13 +218,12 @@ export const useGameLogic = () => {
     if (isWin) {
       setGameState('won');
 
-      // Only increment if no hints were used and no mistakes were made
+      recordWin(currentWord.id);
+
       if (!usedHintRef.current && !madeMistakeRef.current) {
         const newStreak = streak + 1;
         setStreak(newStreak);
         localStorage.setItem('noghteh_streak', newStreak);
-
-        // Update Best Score
         if (newStreak > bestStreak) {
           setBestStreak(newStreak);
           localStorage.setItem('noghteh_best_streak', newStreak);
@@ -211,6 +239,7 @@ export const useGameLogic = () => {
       localStorage.setItem('noghteh_streak', 0);
       setIsShaking(true);
       setTimeout(() => setIsShaking(false), 600);
+
       setTimeout(() => {
         setGameState('playing');
         const initial = {};
@@ -240,5 +269,10 @@ export const useGameLogic = () => {
     checkWin,
     streak,
     bestStreak,
+    currentCategory,
+    switchCategory,
+    getCategoryStars,
+    isCategoryUnlocked,
+    CATEGORY_CONFIG,
   };
 };

@@ -113,8 +113,8 @@ button:active {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1.8rem;
   position: relative;
+  margin-bottom: 1rem;
   padding: 60px;
   background-color: white;
   border-radius: 15px;
@@ -128,7 +128,7 @@ button:active {
 
 @media (max-width: 768px) {
   .game-board {
-    margin-bottom: 2rem;
+    margin-bottom: 0.2;
     padding: 40px;
   }
 }
@@ -477,24 +477,7 @@ button:active {
   pointer-events: none;
 }
 
-/* --- Stats Bar --- */
-/* --- Streak Animations --- */
-
-/* The ignition effect */
-@keyframes streakPulse {
-  0% {
-    transform: scale(1);
-  }
-  40% {
-    transform: scale(1.5); /* Pop up */
-    filter: drop-shadow(0 0 8px #f97316); /* Orange Glow */
-  }
-  100% {
-    transform: scale(1);
-    filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0));
-  }
-}
-
+/* --- Toolbar --- */
 .streak-pop .icon-circle,
 .streak-pop svg {
   animation: streakPulse 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -516,18 +499,37 @@ button:active {
   text-shadow: 0 0 10px rgba(250, 204, 21, 0.4);
 }
 
-.stats-bar {
+/* stat animations */
+.streak-pop svg,
+.streak-pop .stat-value {
+  animation: streakPulse 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.trophy-shine svg,
+.trophy-shine .stat-value {
+  animation: trophyShine 0.8s ease-in-out;
+}
+
+.unified-toolbar {
+  display: flex;
+  width: 95%;
+  max-width: 600px;
+  margin: 0 auto 1.5rem auto;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.stats-group {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 15px;
-  margin-bottom: 0.5rem;
-  padding: 8px 20px;
-  background-color: white;
-  border-radius: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  border: 1px solid #f3f4f6;
-  transition: all 0.3s ease;
+  gap: 16px;
+  padding: 0 16px;
+  flex-shrink: 0;
 }
 
 .stat-item {
@@ -536,23 +538,123 @@ button:active {
   gap: 8px;
 }
 
+.stat-value {
+  font-family: 'Vazirmatn', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #9ca3af;
+  transition: color 0.3s ease;
+}
+
 .stat-value.active-fire {
   color: #ea580c;
   text-shadow: 0 0 10px rgba(234, 88, 12, 0.2);
 }
 
-.stat-value {
-  font-family: 'Vazirmatn', sans-serif; /* Use Persian font for numbers */
-  font-weight: 700;
-  color: #9ca3af;
-  font-size: 1.1rem;
-}
 .stat-value.active-gold {
   color: #eab308;
 }
 
-.stat-divider {
+.toolbar-divider {
   width: 1px;
-  height: 16px;
+  height: 24px;
   background-color: #e5e7eb;
+  flex-shrink: 0;
+}
+
+.categories-scroll-track {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 0 16px;
+  flex-grow: 1;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.categories-scroll-track::-webkit-scrollbar {
+  display: none;
+}
+
+/* Categories */
+.cat-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 12px;
+  background-color: rgba(0, 128, 128, 0.08);
+  border: 1px solid transparent;
+  color: #4b5563;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.cat-chip.active {
+  background-color: rgb(0, 128, 128);
+  color: white;
+}
+
+.cat-chip.locked {
+  opacity: 0.4;
+  background-color: #f3f4f6;
+  filter: grayscale(1);
+  cursor: not-allowed;
+}
+
+.cat-stars {
+  font-size: 0.75rem;
+  background: rgba(0, 0, 0, 0.1);
+  padding: 1px 5px;
+  border-radius: 8px;
+  margin-left: 2px;
+}
+
+@media (max-width: 720px) {
+  .unified-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+    padding: 12px 0 4px 0;
+  }
+
+  .stats-group {
+    width: 100%;
+    justify-content: center;
+    padding: 0 0 10px 0;
+    border-bottom: 1px solid #f3f4f6;
+    gap: 32px;
+    margin-bottom: 2px;
+  }
+
+  .toolbar-divider {
+    display: none;
+  }
+
+  .categories-scroll-track {
+    width: 100%;
+    padding: 12px 6px;
+  }
+
+  .categories-scroll-track::after {
+    content: '';
+    padding-right: 16px;
+  }
+}
+
+@media (min-width: 721px) {
+  .unified-toolbar {
+    flex-direction: row;
+    align-items: center;
+    height: 58px;
+  }
+
+  .stats-group {
+    padding: 0 16px;
+  }
 }

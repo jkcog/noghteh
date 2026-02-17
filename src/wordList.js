@@ -1,3 +1,30 @@
+/* --- CONSTANTS --- */
+const bottomOffsetValue = -5;
+const topShinOffset = 10;
+const topFeOffset = -12;
+const topKheOffset = -15;
+const jimOffset = 20;
+
+export const CATEGORY_CONFIG = {
+  Basics: { label: 'Basics', icon: '👶', unlockThreshold: 0 },
+  Food: { label: 'Food', icon: '🍎', unlockThreshold: 5 },
+  Animals: { label: 'Animals', icon: '🦁', unlockThreshold: 5 },
+  Objects: { label: 'Objects', icon: '⚽', unlockThreshold: 5 },
+};
+
+const getCategoryForId = (id) => {
+  if (
+    [
+      1, 3, 4, 5, 8, 12, 13, 15, 20, 21, 26, 28, 29, 35, 40, 41, 44, 45, 46, 51,
+      57,
+    ].includes(id)
+  )
+    return 'Basics';
+  if ([2, 10, 16, 19, 25, 32, 42, 47, 52, 55, 59].includes(id)) return 'Food';
+  if ([9, 11, 22, 27, 34, 38, 39, 53, 56, 60].includes(id)) return 'Animals';
+  return 'Objects';
+};
+
 const createWord = (id, translation, transliteration, persian, letters) => {
   const dotAllowance = letters.reduce((acc, letter) => {
     return acc + letter.target.top + letter.target.bottom;
@@ -5,6 +32,7 @@ const createWord = (id, translation, transliteration, persian, letters) => {
 
   return {
     id,
+    category: getCategoryForId(id),
     translation,
     transliteration,
     persian,
@@ -12,12 +40,6 @@ const createWord = (id, translation, transliteration, persian, letters) => {
     letters: letters.map((l, index) => ({ ...l, id: index })),
   };
 };
-
-const bottomOffsetValue = -5;
-const topShinOffset = 10;
-const topFeOffset = -12;
-const topKheOffset = -15;
-const jimOffset = 20;
 
 export const WORDS = [
   // 1. Bābā (Dad)
@@ -663,5 +685,170 @@ export const WORDS = [
     },
     { char: '\uFEEE', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
     { char: '\u0644', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
+  ]),
+
+  // 51. Dast (Hand) - Basics
+  createWord(51, 'Hand', 'Dast', 'دست', [
+    { char: '\u062F', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Dal
+    { char: '\u0633\u200D', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Sin
+    { char: '\uFE98', target: { top: 2, bottom: 0 }, bottomOffset: 0 }, // Te (Final)
+  ]),
+
+  // 52. Pesteh (Pistachio)
+  createWord(52, 'Pistachio', 'Pesteh', 'پسته', [
+    {
+      char: '\u066E\u200D', // Pe (uses Be shape)
+      target: { top: 0, bottom: 3 },
+      bottomOffset: bottomOffsetValue,
+    },
+    {
+      char: '\u200D\u0633\u200D',
+      target: { top: 0, bottom: 0 },
+      bottomOffset: 0,
+    }, // Sin
+    {
+      char: '\u200D\u066E\u200D', // Te (uses Be shape)
+      target: { top: 2, bottom: 0 },
+      bottomOffset: 0,
+    },
+    { char: '\u0647', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // He
+  ]),
+
+  // 53. Gorbeh (Cat) - Animals
+  createWord(53, 'Cat', 'Gorbeh', 'گربه', [
+    {
+      char: '\u06AF\u200D', // Gaf
+      target: { top: 0, bottom: 0 },
+      bottomOffset: 0,
+    },
+    { char: '\uFEAE', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Re
+    {
+      char: '\u066E\u200D', // Be
+      target: { top: 0, bottom: 1 },
+      bottomOffset: bottomOffsetValue,
+    },
+    { char: '\u0647', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // He
+  ]),
+
+  // 54. Māshīn (Car) - Objects
+  createWord(54, 'Car', 'Māshīn', 'ماشین', [
+    { char: '\u0645\u200D', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Mim
+    { char: '\uFE8E', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Alef
+    {
+      char: '\u0633\u200D', // Shin
+      target: { top: 3, bottom: 0 },
+      topOffset: topShinOffset,
+      topYOffset: -5,
+    },
+    {
+      char: '\u200D\u066E\u200D', // Ye
+      target: { top: 0, bottom: 2 },
+      bottomOffset: 0,
+    },
+    { char: '\u06BA', target: { top: 1, bottom: 0 }, bottomOffset: 0 }, // Nun
+  ]),
+
+  // 55. Anjīr (Fig) - Food
+  createWord(55, 'Fig', 'Anjīr', 'انجیر', [
+    { char: '\u0627', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Alef
+    {
+      char: '\u066E\u200D', // Nun
+      target: { top: 1, bottom: 0 },
+      bottomOffset: 0,
+    },
+    {
+      char: '\u200D\u062D\u200D', // Jim (uses Hah shape)
+      target: { top: 0, bottom: 1 },
+      bottomOffset: 0,
+    },
+    {
+      char: '\u200D\u066E\u200D', // Ye
+      target: { top: 0, bottom: 2 },
+      bottomOffset: 0,
+    },
+    { char: '\uFEAE', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Re
+  ]),
+
+  // 56. Khers (Bear) - Animals
+  createWord(56, 'Bear', 'Khers', 'خرس', [
+    {
+      char: '\u062D\u200D', // Khe (uses Hah shape)
+      target: { top: 1, bottom: 0 },
+      topYOffset: topKheOffset,
+    },
+    { char: '\uFEAE', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Re
+    { char: '\u0633', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Sin
+  ]),
+
+  // 57. Ghalb (Heart) - Basics
+  createWord(57, 'Heart', 'Ghalb', 'قلب', [
+    {
+      char: '\u0642\u200D', // Ghaf (Initial)
+      target: { top: 2, bottom: 0 },
+      topYOffset: topFeOffset,
+    },
+    {
+      char: '\u200D\u0644\u200D',
+      target: { top: 0, bottom: 0 },
+      bottomOffset: 0,
+    }, // Lam
+    {
+      char: '\u200D\u066E', // Be (Final joined)
+      target: { top: 0, bottom: 1 },
+      bottomOffset: 0,
+    },
+  ]),
+
+  // 58. Kīf (Bag) - Objects
+  createWord(58, 'Bag', 'Kīf', 'کیف', [
+    { char: '\u0643\u200D', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Kaf
+    {
+      char: '\u200D\u066E\u200D', // Ye
+      target: { top: 0, bottom: 2 },
+      bottomOffset: 0,
+    },
+    {
+      char: '\u200D\u06A1', // Fe (Final joined)
+      target: { top: 1, bottom: 0 },
+      topYOffset: topFeOffset,
+    },
+  ]),
+
+  // 59. Kabāb (Kebab) - Food
+  createWord(59, 'Kebab', 'Kabāb', 'کباب', [
+    { char: '\u0643\u200D', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Kaf
+    {
+      char: '\u200D\u066E\u200D', // Be
+      target: { top: 0, bottom: 1 },
+      bottomOffset: 0,
+    },
+    { char: '\uFE8E', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Alef
+    { char: '\u066E', target: { top: 0, bottom: 1 }, bottomOffset: 0 }, // Be (Final)
+  ]),
+
+  // 60. Ankabūt (Spider) - Animals
+  createWord(60, 'Spider', 'Ankabūt', 'عنکبوت', [
+    {
+      char: '\u0639\u200D', // Ain
+      target: { top: 0, bottom: 0 },
+      bottomOffset: 0,
+    },
+    {
+      char: '\u200D\u066E\u200D', // Nun
+      target: { top: 1, bottom: 0 },
+      bottomOffset: 0,
+    },
+    {
+      char: '\u200D\u06A9\u200D', // Kaf
+      target: { top: 0, bottom: 0 },
+      bottomOffset: 0,
+    },
+    {
+      char: '\u200D\u066E\u200D', // Be
+      target: { top: 0, bottom: 1 },
+      bottomOffset: 0,
+    },
+    { char: '\uFEEE', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Vav
+    { char: '\uFE98', target: { top: 2, bottom: 0 }, bottomOffset: 0 }, // Te
   ]),
 ];
