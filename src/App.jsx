@@ -1,6 +1,8 @@
+import { useEffect } from 'react';
 import './App.css';
 import { useGameLogic } from './hooks/useGameLogic';
 import { usePersianAudio } from './hooks/usePersianAudio';
+import { useSoundEffects } from './hooks/useSoundEffects';
 import { Inventory } from './components/Inventory';
 import { GameInterface } from './components/GameInterface';
 import { LightbulbIcon } from './components/Icons/LightbulbIcon';
@@ -28,6 +30,15 @@ export default function NoghtehGame() {
   } = useGameLogic();
 
   const playAudio = usePersianAudio();
+  const playSfx = useSoundEffects();
+
+  useEffect(() => {
+    if (gameState === 'won') {
+      playSfx('win');
+    } else if (gameState === 'error') {
+      playSfx('error');
+    }
+  }, [gameState, playSfx]);
 
   if (!currentWord) return <div>Loading...</div>;
 

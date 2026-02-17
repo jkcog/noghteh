@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
+import { useSoundEffects } from './useSoundEffects';
 import { WORDS } from '../wordList';
 
 export const useGameLogic = () => {
@@ -41,6 +42,8 @@ export const useGameLogic = () => {
   // Track purity of the current round (using refs so they don't trigger re-renders)
   const usedHintRef = useRef(false);
   const madeMistakeRef = useRef(false);
+
+  const playSfx = useSoundEffects();
 
   const toggleHardMode = useCallback(() => {
     setIsHardMode((prev) => {
@@ -97,6 +100,7 @@ export const useGameLogic = () => {
     if (gameState === 'won') return;
 
     const currentDotsInZone = boardState[id][position];
+    playSfx('pop');
 
     if (currentDotsInZone >= 3) {
       setBoardState((prev) => ({
@@ -149,6 +153,7 @@ export const useGameLogic = () => {
 
     const currentDots = boardState[id][position];
     if (currentDots > 0) {
+      playSfx('pop');
       setBoardState((prev) => ({
         ...prev,
         [id]: { ...prev[id], [position]: currentDots - 1 },
