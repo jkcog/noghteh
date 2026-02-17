@@ -4,7 +4,12 @@ A minimalist, interactive tool for learning the placement of dots (_noghteh_) in
 
 ## 🚀 Live Demo
 
+[![Build & Test Status](https://github.com/jkcog/noghteh/actions/workflows/deploy.yaml/badge.svg)](https://github.com/jkcog/noghteh/actions)
+<br />
+<br />
 **[Play Noghteh here](https://jkcog.github.io/noghteh/)**
+<br />
+
 
 ## ✨ Features
 
@@ -14,6 +19,9 @@ A minimalist, interactive tool for learning the placement of dots (_noghteh_) in
 - **Audio:** Listen to pronunciations for every word to reinforce learning.
 - **Hard Mode:** Toggle the eye icon to blur the transliteration, testing your ability to read the Persian script directly.
 - **Streak System:** Build a streak by solving words perfectly (no hints, no errors).
+- **Category-Based Learning:** Words are grouped into logical sets: Basics, Food, Animals, and Objects.
+- **Mastery Stars:** Track your proficiency with each word. Earning stars represents consistent perfect solves.
+- **Structured Unlocks:** A milestone-based system where mastering one category (earning stars) unlocks the next.
 - **Visual Feedback:** Instant animations for correct matches and a "shake" effect for errors.
 
 ## 🎨 UX & Interaction Details

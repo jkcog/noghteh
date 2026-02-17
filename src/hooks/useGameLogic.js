@@ -131,6 +131,10 @@ export const useGameLogic = () => {
     const currentDotsInZone = boardState[id][position];
     playSfx('pop');
 
+    if (navigator.vibrate) {
+      navigator.vibrate(10);
+    }
+
     if (currentDotsInZone >= 3) {
       setBoardState((prev) => ({
         ...prev,
@@ -183,6 +187,7 @@ export const useGameLogic = () => {
     const currentDots = boardState[id][position];
     if (currentDots > 0) {
       playSfx('pop');
+
       setBoardState((prev) => ({
         ...prev,
         [id]: { ...prev[id], [position]: currentDots - 1 },
