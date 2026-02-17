@@ -630,13 +630,17 @@ export const WORDS = [
 
   // 48. Mīz (Table)
   createWord(48, 'Table', 'Mīz', 'میز', [
-    { char: '\u0645\u200D', target: { top: 0, bottom: 0 }, bottomOffset: 0 },
+    { char: '\u0645\u200D', target: { top: 0, bottom: 0 }, bottomOffset: 0 }, // Mim
     {
       char: '\u200D\u066E\u200D',
       target: { top: 0, bottom: 2 },
       bottomOffset: 0,
+    }, // Yeh
+    {
+      char: '\u0631', // Re
+      target: { top: 1, bottom: 0 },
+      bottomOffset: 0,
     },
-    { char: '\u0632', target: { top: 1, bottom: 0 }, bottomOffset: 0 },
   ]),
 
   // 49. Chetr (Umbrella)
