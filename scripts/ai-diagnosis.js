@@ -18,6 +18,13 @@ const diagnose = async () => {
     
     ERROR LOG:
     ${errorLog}
+
+	RULES:
+    1. Do NOT delete any tests. 
+    2. Do NOT comment out failing assertions.
+    3. If the logic in the source code is wrong, fix the source code.
+    4. If the test expectation is mathematically or logically impossible, fix the test expectation to be correct.
+    5. Maintain the existing coding style and imports.
     
     You MUST respond with ONLY a valid JSON object in this exact format:
     {
