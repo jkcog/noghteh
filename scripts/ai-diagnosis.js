@@ -50,7 +50,13 @@ try {
   );
 
   const data = await response.json();
-  const { filePath, diff } = JSON.parse(data.choices[0].message.content);
+  const content = JSON.parse(data.choices[0].message.content);
+
+  console.log('--- RAW AI RESPONSE ---');
+  console.log(content);
+  console.log('-----------------------');
+
+  const { filePath, diff } = content;
 
   fs.writeFileSync('fix.patch', diff.trim() + '\n\n');
 
