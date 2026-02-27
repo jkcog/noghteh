@@ -17,8 +17,8 @@ STRICT RULES:
 
  You MUST respond with ONLY a valid JSON object in this format:
 {
-  "filePath": "src/App.test.js",
-  "diff": "--- src/App.test.js\\n+++ src/App.test.js\\n@@ -10,1 +10,1 @@\\n-  expect(1 + 1).toBe(3);\\n+  expect(1 + 1).toBe(2);"
+  "filePath": "valid filename",
+  "diff": "valid unified diff"
 }
 `;
 
@@ -50,10 +50,12 @@ try {
   const data = await response.json();
   const { filePath, diff } = JSON.parse(data.choices[0].message.content);
 
-  fs.writeFileSync('fix.patch', diff + '\n');
+  fs.writeFileSync('fix.patch', diff.trim() + '\n\n');
 
   console.log(`Applying precision patch to ${filePath}...`);
-  execSync(`patch ${filePath} fix.patch`);
+  execSync(
+    `git apply --recount --whitespace=fix --ignore-space-change fix.patch`,
+  );
 
   console.log('✅ Patch applied successfully!');
 } catch (err) {

@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -46,12 +48,16 @@ jobs:
 
           BRANCH_NAME="ai-fix-${{ github.run_id }}"
           git checkout -b $BRANCH_NAME
+
+          rm -f fix.patch
+
+          git add .
           git commit -am "chore: AI automated fix for failing pipeline"
           git push -u origin $BRANCH_NAME
 
           gh pr create \
             --title "🤖 AI Auto-Fix for Failed Build" \
-            --body "The pipeline failed. **gpt-5-mini** diagnosed the error and proposed this fix. Please review carefully!" \
+            --body "The pipeline failed. **gpt-4.1** diagnosed the error and proposed this fix. Please review carefully!" \
             --base main \
             --head $BRANCH_NAME
 
