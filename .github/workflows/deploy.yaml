@@ -50,6 +50,7 @@ jobs:
           git checkout -b $BRANCH_NAME
 
           git add .
+          git reset pr_body.txt
           git commit -m "chore: AI automated fixes"
           git push -u origin $BRANCH_NAME
 
