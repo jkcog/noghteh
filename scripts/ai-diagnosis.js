@@ -14,7 +14,7 @@ const diagnose = async () => {
 
   const prompt = `
     The following CI/CD test or build step just failed. 
-    Analyse the stack trace, identify the specific file that caused the error, and provide the entire corrected file content.
+    Analyse the stack trace, identify the specific file that caused the error, and provide the entire corrected file content without deleting any other code.
     
     ERROR LOG:
     ${errorLog}
@@ -25,11 +25,12 @@ const diagnose = async () => {
     3. If the logic in the source code is wrong, fix the source code.
     4. If the test expectation is mathematically or logically impossible, fix the test expectation to be correct.
     5. Maintain the existing coding style and imports.
+	6. You MUST return the ENTIRE file content in 'newContent'.
     
     You MUST respond with ONLY a valid JSON object in this exact format:
     {
       "filePath": "path/to/the/broken/file.js",
-      "newContent": "// the full corrected code goes here"
+      "newContent": "the FULL, COMPLETE file content"
     }
   `;
 
@@ -49,7 +50,7 @@ const diagnose = async () => {
           {
             role: 'system',
             content:
-              'You are an automated debugging system. You output ONLY valid JSON.',
+              'You are an automated debugging system. You output ONLY valid JSON. When providing code, you ALWAYS return the complete file content from start to finish. Never use comments like `// ...` to omit code. Never delete existing tests.',
           },
           {
             role: 'user',
