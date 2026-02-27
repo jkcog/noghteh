@@ -6,6 +6,8 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
+  models: read
 
 jobs:
   build-and-deploy:
@@ -25,12 +27,36 @@ jobs:
         run: npm ci
 
       - name: Run Unit Tests
-        run: npm test -- run
+        run: npm test > error.log 2>&1 || (cat error.log && exit 1)
 
       - name: Build Project
         run: npm run build
 
+      - name: AI Auto-Diagnose and PR Fix
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Build or Test failed! Initiating self-healing sequence..."
+
+          node ./scripts/ai-diagnosis.js
+
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          BRANCH_NAME="ai-fix-${{ github.run_id }}"
+          git checkout -b $BRANCH_NAME
+          git commit -am "chore: AI automated fix for failing pipeline"
+          git push -u origin $BRANCH_NAME
+
+          gh pr create \
+            --title "🤖 AI Auto-Fix for Failed Build" \
+            --body "The pipeline failed. **gpt-5-mini** diagnosed the error and proposed this fix. Please review carefully!" \
+            --base main \
+            --head $BRANCH_NAME
+
       - name: Deploy to GitHub Pages
+        if: success()
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: dist
