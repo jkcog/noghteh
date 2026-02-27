@@ -26,7 +26,7 @@ const diagnose = async () => {
     }
   `;
 
-  console.log('🤖 Asking gpt-5-mini for a fix via GitHub Models...');
+  console.log('🤖 Asking gpt-4o-mini" for a fix via GitHub Models...');
 
   const response = await fetch(
     'https://models.github.ai/inference/chat/completions',
@@ -37,7 +37,7 @@ const diagnose = async () => {
         Authorization: `Bearer ${process.env.GH_TOKEN}`,
       },
       body: JSON.stringify({
-        model: 'gpt-5-mini',
+        model: 'gpt-4o-mini"',
         messages: [
           {
             role: 'system',
