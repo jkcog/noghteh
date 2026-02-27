@@ -1,41 +1,28 @@
 import fs from 'node:fs';
+import { execSync } from 'node:child_process';
 import process from 'node:process';
 
-const diagnose = async () => {
-  let errorLog;
-  try {
-    errorLog = fs.readFileSync('error.log', 'utf8');
-  } catch {
-    console.error(
-      'Could not read error.log. Exiting auto-diagnosis process...',
-    );
-    process.exit(1);
-  }
+const errorLog = fs.readFileSync('error.log', 'utf8');
 
-  const prompt = `
-    The following CI/CD test or build step just failed. 
-    Analyse the stack trace, identify the specific file that caused the error, and provide the entire corrected file content without deleting any other code.
-    
-    ERROR LOG:
-    ${errorLog}
+const prompt = `
+A CI/CD test or build step just failed. 
+Analyse the stack trace. Provide a UNIFIED DIFF to fix the issue.
+ERROR: ${errorLog}
 
-	RULES:
-    1. Do NOT delete any tests. 
-    2. Do NOT comment out failing assertions.
-    3. If the logic in the source code is wrong, fix the source code.
-    4. If the test expectation is mathematically or logically impossible, fix the test expectation to be correct.
-    5. Maintain the existing coding style and imports.
-	6. You MUST return the ENTIRE file content in 'newContent'.
-    
-    You MUST respond with ONLY a valid JSON object in this exact format:
-    {
-      "filePath": "path/to/the/broken/file.js",
-      "newContent": "the FULL, COMPLETE file content"
-    }
-  `;
+STRICT RULES:
+1. ONLY change lines that are necessary to fix the error.
+2. Do NOT change formatting, spacing, or unrelated code.
+3. If the test (e.g., 1+1=3) is the problem, change the test expectation to 2.
+4. Output MUST be a valid JSON object.
 
-  console.log('🤖 Asking openai/gpt-4.1 for a fix via GitHub Models...');
+ You MUST respond with ONLY a valid JSON object in this format:
+{
+  "filePath": "src/App.test.js",
+  "diff": "--- src/App.test.js\\n+++ src/App.test.js\\n@@ -10,1 +10,1 @@\\n-  expect(1 + 1).toBe(3);\\n+  expect(1 + 1).toBe(2);"
+}
+`;
 
+try {
   const response = await fetch(
     'https://models.github.ai/inference/chat/completions',
     {
@@ -50,44 +37,26 @@ const diagnose = async () => {
           {
             role: 'system',
             content:
-              'You are an automated debugging system. You output ONLY valid JSON. When providing code, you ALWAYS return the complete file content from start to finish. Never use comments like `// ...` to omit code. Never delete existing tests.',
+              'You are a precision code-patching tool. You only output unified diffs in JSON format.',
           },
-          {
-            role: 'user',
-            content: prompt,
-          },
+          { role: 'user', content: prompt },
         ],
-        temperature: 0.1,
+        temperature: 0,
         response_format: { type: 'json_object' },
       }),
     },
   );
 
-  if (!response.ok) {
-    const errText = await response.text();
-    console.error(
-      `❌ GitHub Models API Error: ${response.status} - ${errText}`,
-    );
-    process.exit(1);
-  }
-
   const data = await response.json();
-  const aiResponseText = data.choices[0].message.content;
+  const { filePath, diff } = JSON.parse(data.choices[0].message.content);
 
-  try {
-    const fixData = JSON.parse(aiResponseText.trim());
+  fs.writeFileSync('fix.patch', diff + '\n');
 
-    if (!fixData.filePath || !fixData.newContent) {
-      throw new Error('Missing filePath or newContent in AI response.');
-    }
+  console.log(`Applying precision patch to ${filePath}...`);
+  execSync(`patch ${filePath} fix.patch`);
 
-    fs.writeFileSync(fixData.filePath, fixData.newContent, 'utf8');
-    console.log(`✅ Successfully applied fix to ${fixData.filePath}`);
-  } catch (err) {
-    console.error('❌ Failed to parse AI response or write file.', err);
-    console.error('Raw AI Output:', aiResponseText);
-    process.exit(1);
-  }
-};
-
-diagnose();
+  console.log('✅ Patch applied successfully!');
+} catch (err) {
+  console.error('❌ Fix failed:', err.message);
+  process.exit(1);
+}
