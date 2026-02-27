@@ -13,7 +13,8 @@ STRICT RULES:
 1. ONLY change lines that are necessary to fix the error.
 2. Do NOT change formatting, spacing, or unrelated code.
 3. If the test (e.g., 1+1=3) is the problem, change the test expectation to 2.
-4. Output MUST be a valid JSON object.
+4. Output MUST be a valid RAW JSON object. 
+5. Do not include markdown code blocks. The "diff" field MUST start with "--- a/".'
 
  You MUST respond with ONLY a valid JSON object in this format:
 {
@@ -37,7 +38,7 @@ try {
           {
             role: 'system',
             content:
-              'You are a precision code-patching tool. You only output unified diffs in JSON format.',
+              'You are a precision code-patching tool. You only output unified diffs in raw JSON format.',
           },
           { role: 'user', content: prompt },
         ],
