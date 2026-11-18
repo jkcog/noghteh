@@ -22,6 +22,20 @@ describe('LetterColumn Component', () => {
     expect(getByText('A')).toBeDefined();
   });
 
+  it('should add the wrong class only when isWrong is set', () => {
+    const props = {
+      letter: mockLetter,
+      index: 0,
+      boardStateForLetter: mockBoardState,
+      handleZoneClick: mockHandleClick,
+      handleRightClick: mockHandleRightClick,
+    };
+    const { container, rerender } = render(<LetterColumn {...props} />);
+    expect(container.querySelector('.letter-container.wrong')).toBeNull();
+    rerender(<LetterColumn {...props} isWrong />);
+    expect(container.querySelector('.letter-container.wrong')).not.toBeNull();
+  });
+
   it('should call handleZoneClick with correct params when top zone is clicked', () => {
     const { container } = render(
       <LetterColumn

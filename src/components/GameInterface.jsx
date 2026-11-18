@@ -7,7 +7,8 @@ export const GameInterface = ({
   handleRightClick,
   gameState,
   isShaking,
-  showHints
+  showHints,
+  wrongLetterIds = [],
 }) => {
   return (
     <div
@@ -22,6 +23,7 @@ export const GameInterface = ({
           handleZoneClick={handleZoneClick}
           handleRightClick={handleRightClick}
           showHints={showHints}
+          isWrong={wrongLetterIds.includes(letter.id)}
         />
       ))}
     </div>

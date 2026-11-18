@@ -18,6 +18,7 @@ export const useGameLogic = () => {
   const currentWord = activeWordList[currentWordIndex] || activeWordList[0];
 
   const [isShaking, setIsShaking] = useState(false);
+  const [wrongLetterIds, setWrongLetterIds] = useState([]);
   const [showHints, setShowHints] = useState(false);
   const [gameState, setGameState] = useState('playing');
 
@@ -126,7 +127,7 @@ export const useGameLogic = () => {
   };
 
   const handleZoneClick = (id, position) => {
-    if (gameState === 'won') return;
+    if (gameState === 'won' || gameState === 'error') return;
 
     const currentDotsInZone = boardState[id][position];
     playSfx('pop');
@@ -182,7 +183,7 @@ export const useGameLogic = () => {
 
   const handleRightClick = (e, id, position) => {
     e.preventDefault();
-    if (gameState === 'won') return;
+    if (gameState === 'won' || gameState === 'error') return;
 
     const currentDots = boardState[id][position];
     if (currentDots > 0) {
@@ -208,17 +209,16 @@ export const useGameLogic = () => {
   };
 
   const checkWin = () => {
-    let isWin = true;
-
-    currentWord.letters.forEach((letter) => {
-      const current = boardState[letter.id];
-      if (
-        current.top !== letter.target.top ||
-        current.bottom !== letter.target.bottom
-      ) {
-        isWin = false;
-      }
-    });
+    const wrongIds = currentWord.letters
+      .filter((letter) => {
+        const current = boardState[letter.id];
+        return (
+          current.top !== letter.target.top ||
+          current.bottom !== letter.target.bottom
+        );
+      })
+      .map((letter) => letter.id);
+    const isWin = wrongIds.length === 0;
 
     if (isWin) {
       setGameState('won');
@@ -245,16 +245,26 @@ export const useGameLogic = () => {
       setIsShaking(true);
       setTimeout(() => setIsShaking(false), 600);
 
+      setWrongLetterIds(wrongIds);
+
+      // Keep correct letters' dots; clear only the wrong ones.
+      const removedDots = wrongIds.reduce(
+        (sum, id) => sum + boardState[id].top + boardState[id].bottom,
+        0,
+      );
       setTimeout(() => {
         setGameState('playing');
-        const initial = {};
-        currentWord.letters.forEach((l) => {
-          initial[l.id] = { top: 0, bottom: 0 };
+        setWrongLetterIds([]);
+        setBoardState((prev) => {
+          const next = { ...prev };
+          wrongIds.forEach((id) => {
+            next[id] = { top: 0, bottom: 0 };
+          });
+          return next;
         });
-        setBoardState(initial);
-        setDotsPlaced(0);
-        setHistory([]);
-      }, 1000);
+        setDotsPlaced((prev) => prev - removedDots);
+        setHistory((prev) => prev.filter((m) => !wrongIds.includes(m.id)));
+      }, 1500);
     }
   };
 
@@ -264,6 +274,7 @@ export const useGameLogic = () => {
     dotsRemaining,
     gameState,
     isShaking,
+    wrongLetterIds,
     showHints,
     isHardMode,
     toggleHardMode,

@@ -197,6 +197,24 @@ describe('useGameLogic', () => {
       expect(result.current.gameState).toBe('error');
       expect(mockRecordWin).not.toHaveBeenCalled();
     });
+
+    it('should flag only wrong letters and keep correct dots after the error', () => {
+      const { result } = renderHook(() => useGameLogic());
+
+      act(() => result.current.handleZoneClick(0, 'top')); // correct
+      act(() => result.current.handleZoneClick(1, 'top')); // wrong
+      act(() => result.current.checkWin());
+
+      expect(result.current.wrongLetterIds).toEqual([1]);
+
+      act(() => vi.advanceTimersByTime(1500));
+
+      expect(result.current.wrongLetterIds).toEqual([]);
+      expect(result.current.gameState).toBe('playing');
+      expect(result.current.boardState[0]).toEqual({ top: 1, bottom: 0 });
+      expect(result.current.boardState[1]).toEqual({ top: 0, bottom: 0 });
+      expect(result.current.dotsRemaining).toBe(1);
+    });
   });
 
   describe('Hint System', () => {
