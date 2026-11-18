@@ -282,8 +282,4 @@ describe('useGameLogic', () => {
       expect(result.current.streak).toBe(0);
     });
   });
-
-  it('AI self-healing trigger test', () => {
-    expect(1 + 1).toBe(3);
-  });
 });

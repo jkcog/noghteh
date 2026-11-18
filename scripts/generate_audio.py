@@ -1,89 +1,49 @@
-import os
+"""Generate a pronunciation mp3 for every word in src/words.json.
+
+Usage:
+    python scripts/generate_audio.py          # only generate missing files
+    python scripts/generate_audio.py --force  # regenerate everything
+"""
 import asyncio
+import json
+import os
+import sys
+
 import edge_tts
 
 VOICE = "fa-IR-DilaraNeural"
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+WORDS_FILE = os.path.join(ROOT, "src", "words.json")
+OUTPUT_DIR = os.path.join(ROOT, "public", "audio")
 
-words = {
-    1: "بابا",    # Baba
-    2: "توت",     # Tut
-    3: "پا",      # Pa
-    4: "نان",     # Nan
-    5: "بینی",    # Bini
-    7: "توپ",     # Tup
-    8: "زن",      # Zan
-    9: "اسب",     # Asb
-    10: "سیب",    # Sib
-    11: "موش",    # Mush
-    12: "آب",     # Ab
-    13: "پسر",    # Pesar
-    14: "برف",    # Barf
-    15: "شب",     # Shab
-    16: "چای",    # Chay
-    17: "یخ",     # Yakh
-    18: "دریا",   # Darya
-    19: "پنیر",   # Panir
-    20: "باران",  # Baran
-    21: "زبان",   # Zaban
-    22: "جوجه",   # Jujeh
-    23: "درخت",   # Derakht
-    24: "فرش",    # Farsh
-    25: "بادام",  # Badam
-    26: "دوست",   # Doost
-    27: "شیر",    # Shir
-    28: "خانه",   # Khaneh
-    29: "خوب",    # Khub
-    30: "کتاب",   # Ketab
-    31: "پنجره",  # Panjereh
-    32: "نمک",    # Namak
-    34: "گوش",    # Gush
-    35: "بیست",   # Bist
-    36: "چشم",    # Chashm
-    37: "کفش",    # Kafsh
-    38: "زنبور",  # Zanbur
-    39: "خرگوش",  # Khargush
-    40: "آفتاب",  # Aftab
-    41: "تابستان",# Tabestan
-    42: "شیرین",  # Shirin
-    43: "خورشید", # Khorshid
-    44: "چهارشنبه", # Chaharshanbe
-    45: "دیشب",   # Dishab
-    46: "سبز",    # Sabz
-    47: "برنج",   # Berenj
-    48: "میز",    # Miz
-    49: "چتر",    # Chetr
-    50: "پول",    # Pul
-    51: "دست",    # Dast
-    52: "پسته",   # Pesteh
-    53: "گربه",   # Gorbeh
-    54: "ماشین",  # Mashin
-    55: "انجیر",  # Anjir
-    56: "خرس",    # Khers
-    57: "قلب",    # Ghalb
-    58: "کیف",    # Kif
-    59: "کباب",   # Kebab
-    60: "عنکبوت", # Ankabut
-}
 
-async def main():
-    output_dir = "public/audio"
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
+async def main(force=False):
+    with open(WORDS_FILE, encoding="utf-8") as f:
+        # Each entry: [id, category, translation, transliteration, persian]
+        words = json.load(f)
 
-    print(f"Starting download for {len(words)} words using Neural Voice")
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+    todo = [
+        (w[0], w[4])
+        for w in words
+        if force or not os.path.exists(os.path.join(OUTPUT_DIR, f"{w[0]}.mp3"))
+    ]
+    print(f"Generating {len(todo)} of {len(words)} words using Neural Voice")
 
-    for word_id, persian_text in words.items():
-        filename = f"{word_id}.mp3"
-        filepath = os.path.join(output_dir, filename)
-        
+    failed = []
+    for word_id, persian_text in todo:
+        filepath = os.path.join(OUTPUT_DIR, f"{word_id}.mp3")
         try:
-            communicate = edge_tts.Communicate(persian_text, VOICE)
-            await communicate.save(filepath)
+            await edge_tts.Communicate(persian_text, VOICE).save(filepath)
             print(f"Saved [{word_id}]: {persian_text}")
         except Exception as e:
+            failed.append(word_id)
+            if os.path.exists(filepath) and os.path.getsize(filepath) == 0:
+                os.remove(filepath)
             print(f"Failed [{word_id}]: {e}")
 
-    print("\nDone!")
+    print(f"\nDone! {len(failed)} failed: {failed}" if failed else "\nDone!")
+
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(main(force="--force" in sys.argv))
