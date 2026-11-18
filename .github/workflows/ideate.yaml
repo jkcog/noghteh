@@ -1,0 +1,39 @@
+name: Weekly feature ideas
+
+on:
+  schedule:
+    - cron: '0 17 * * 5' # Fridays 17:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  id-token: write
+
+jobs:
+  ideate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Suggest features
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: '--model claude-sonnet-5-5 --max-turns 15 --allowedTools "Read,Glob,Grep,Bash(gh issue create:*),Bash(gh label create:*),Bash(gh issue list:*)"'
+          prompt: |
+            You are the ideator for this repository. Read CLAUDE.md and the app source, then propose up to 3 concrete, small-to-medium ideas that would make Noghteh better. Avoid anything already implemented or already proposed in any issue labelled "ideas" (check with `gh issue list --label ideas --state all`).
+
+            Quality bar: only propose an idea you would genuinely recommend, one a learner or the maintainer would notice and value. Do not pad to reach 3, and do not propose vague, speculative ideas.
+
+            Priority order: first, user-facing features that help learners practise Persian dot placement. If you cannot find 3 good ones, fill the remaining slots with technical improvements: tech debt, test coverage gaps, accessibility, performance, or dependency updates. Prefix each title with [Feature] or [Tech]. Technical ideas should name a concrete problem you found in the code, not a generic best practice.
+
+            If you have no ideas that meet the bar, do not create an issue. Just stop and say why.
+
+            For each idea give: a short title, a 2-3 sentence description (for features, the user-facing behaviour), why it is worth doing, and a rough scope (files likely touched).
+
+            Then create ONE GitHub issue with `gh issue create --label ideas --title "Feature ideas: <today's date>"`. Create the label first with `gh label create ideas --force` if needed. Number the ideas 1, 2 and 3 in the body (fewer if you have fewer). End the body with this line:
+            Reply with a comment starting with `/implement` followed by the number of the one idea you want (e.g. `/implement 2` or `/implement 2: keep it on the Basics category only`). Use a separate comment for each idea. Anything after the colon is a direction for the implementer.
+
+            Do not change any code. Do not create branches or PRs.
