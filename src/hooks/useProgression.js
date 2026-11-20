@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { CATEGORY_CONFIG, WORDS } from '../wordList';
+import { CATEGORY_CONFIG, DOT_WORDS } from '../wordList';
 
 export const useProgression = () => {
   const [mastery, setMastery] = useState(() => {
@@ -12,7 +12,7 @@ export const useProgression = () => {
 
   const getCategoryStars = useCallback(
     (category) => {
-      return WORDS.filter((w) => w.category === category).reduce(
+      return DOT_WORDS.filter((w) => w.category === category).reduce(
         (acc, word) => {
           return acc + (mastery[word.id] ? 1 : 0);
         },

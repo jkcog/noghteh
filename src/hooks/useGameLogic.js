@@ -1,14 +1,14 @@
 import { useState, useCallback, useRef, useMemo } from 'react';
 import { useSoundEffects } from './useSoundEffects';
 import { useProgression } from './useProgression';
-import { WORDS, CATEGORY_CONFIG } from '../wordList';
+import { DOT_WORDS, CATEGORY_CONFIG } from '../wordList';
 
 export const useGameLogic = () => {
   const [currentCategory, setCurrentCategory] = useState('Basics');
   const { recordWin, getCategoryStars, isCategoryUnlocked } = useProgression();
 
   const activeWordList = useMemo(() => {
-    return WORDS.filter((w) => w.category === currentCategory);
+    return DOT_WORDS.filter((w) => w.category === currentCategory);
   }, [currentCategory]);
 
   const [currentWordIndex, setCurrentWordIndex] = useState(() =>
@@ -86,7 +86,7 @@ export const useGameLogic = () => {
 
     setCurrentCategory(newCategory);
 
-    const newWords = WORDS.filter((w) => w.category === newCategory);
+    const newWords = DOT_WORDS.filter((w) => w.category === newCategory);
 
     const randomIndex = Math.floor(Math.random() * newWords.length);
     const newWord = newWords[randomIndex];

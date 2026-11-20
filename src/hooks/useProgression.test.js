@@ -8,7 +8,7 @@ vi.mock('../wordList', () => ({
     Food: { unlockThreshold: 2 },
     Animals: { unlockThreshold: 1 },
   },
-  WORDS: [
+  DOT_WORDS: [
     { id: 1, category: 'Basics' },
     { id: 2, category: 'Basics' },
     { id: 3, category: 'Basics' },
