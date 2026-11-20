@@ -33,3 +33,7 @@ export const WORDS = WORD_DATA.map(
   ([id, category, translation, transliteration, persian]) =>
     createWord(id, category, translation, transliteration, persian),
 );
+
+// Words the dots game can use. Words with no dots (e.g. مادر) have nothing to
+// place, so they would be "won" by tapping Check straight away.
+export const DOT_WORDS = WORDS.filter((w) => w.dotAllowance > 0);

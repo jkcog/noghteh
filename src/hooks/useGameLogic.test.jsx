@@ -7,7 +7,7 @@ vi.mock('../wordList', () => ({
     Basics: { label: 'Basics', icon: '👶', unlockThreshold: 0 },
     Food: { label: 'Food', icon: '🍎', unlockThreshold: 2 },
   },
-  WORDS: [
+  DOT_WORDS: [
     {
       id: 1,
       category: 'Basics',

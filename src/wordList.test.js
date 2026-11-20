@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { WORDS, CATEGORY_CONFIG } from './wordList';
+import { WORDS, DOT_WORDS, CATEGORY_CONFIG } from './wordList';
 import { analyseWord, LETTERS, DOTTED_CODEPOINTS } from './letterShaping';
 
 describe('Word List Data', () => {
@@ -32,6 +32,21 @@ describe('Word List Data', () => {
   it('should give every category at least 5 words (the unlock threshold)', () => {
     Object.keys(CATEGORY_CONFIG).forEach((cat) => {
       expect(WORDS.filter((w) => w.category === cat).length).toBeGreaterThanOrEqual(5);
+    });
+  });
+
+  it('should only offer words with dots to place in the dots game', () => {
+    expect(DOT_WORDS.length).toBeGreaterThan(0);
+    DOT_WORDS.forEach((w) => expect(w.dotAllowance).toBeGreaterThan(0));
+    expect(DOT_WORDS.length).toBeLessThan(WORDS.length);
+  });
+
+  it('should give every category at least 5 dotted words (the unlock threshold)', () => {
+    Object.keys(CATEGORY_CONFIG).forEach((cat) => {
+      expect(
+        DOT_WORDS.filter((w) => w.category === cat).length,
+        cat,
+      ).toBeGreaterThanOrEqual(5);
     });
   });
 
