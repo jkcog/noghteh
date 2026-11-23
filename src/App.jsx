@@ -58,6 +58,7 @@ export default function NoghtehGame() {
       />
       <div className="header">
         <h1>نقطه Noghteh</h1>
+        <p className="subtitle">Place the dots. Read the word.</p>
         <p className="instructions">
           Place the correct dots on the letters. Left-click to add, right-click
           to remove.
