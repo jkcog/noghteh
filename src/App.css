@@ -1,6 +1,6 @@
 /* --- Layout --- */
 .container {
-  font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+  font-family: var(--fa);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -9,14 +9,22 @@
   min-width: 100vw;
   max-width: 100vw;
   overflow-x: hidden;
-  background-color: #f3f4f6;
+  background-color: var(--paper);
+  color: var(--ink);
   direction: rtl;
+  padding: 28px 20px 60px;
 }
 
 .header {
   margin-bottom: 2rem;
   text-align: center;
-  color: teal;
+  direction: ltr;
+}
+
+.header h1 {
+  font: 600 32px/1 var(--display);
+  letter-spacing: -0.01em;
+  color: var(--ink);
 }
 
 @media (max-width: 720px) {
@@ -26,13 +34,11 @@
 }
 
 .instructions {
-  font-size: 0.85rem;
-  color: #6b7280;
+  font: italic 15px/1.5 var(--serif);
+  color: var(--dim);
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
   max-width: 300px;
-  line-height: 1.4;
-  font-style: italic;
   direction: ltr;
 }
 
@@ -68,15 +74,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
-  border: 1px solid #d1d5db;
-  color: #6b7280;
+  background: var(--card);
+  border: 1px solid var(--line);
+  color: var(--dim);
   transition: all 0.2s ease;
 }
 
 .icon-label {
-  font-size: 0.75rem;
-  color: #9ca3af;
+  font: 12px/1 var(--sans);
+  color: var(--dim);
   font-weight: 500;
   transition: color 0.2s ease;
 }
@@ -84,25 +90,26 @@
 /* Hover States */
 @media (hover: hover) {
   .icon-btn-wrapper:hover .icon-circle {
-    background-color: #f3f4f6;
-    border-color: #9ca3af;
-    color: #374151;
+    background-color: var(--card2);
+    border-color: var(--dim);
+    color: var(--ink);
+    box-shadow: var(--shadow);
   }
   .icon-btn-wrapper:hover .icon-label {
-    color: #6b7280;
+    color: var(--ink);
   }
 }
 
 /* Active State (For Hints) */
 .icon-btn-wrapper.active .icon-circle {
-  background-color: #effdff;
-  border-color: teal;
-  color: #fbbf24;
-  box-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+  background-color: var(--card2);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent);
 }
 
 .icon-btn-wrapper.active .icon-label {
-  color: teal;
+  color: var(--accent-ink);
   font-weight: 600;
 }
 
@@ -124,14 +131,26 @@ button:active {
   position: relative;
   margin-bottom: 1rem;
   padding: 60px;
-  background-color: white;
-  border-radius: 15px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border: 2px solid transparent;
+  background-color: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 2px solid var(--line);
+  animation: rise 0.4s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .game-board.won {
-  border-color: #4ade80;
+  border-color: var(--good);
 }
 
 @media (max-width: 768px) {
@@ -155,7 +174,7 @@ button:active {
 .character {
   font-size: 100px;
   line-height: 100px;
-  color: #333;
+  color: var(--ink);
   user-select: none;
   font-feature-settings:
     'kern' 1,
@@ -186,7 +205,7 @@ button:active {
 }
 
 .dot-zone:hover {
-  background-color: rgba(0, 128, 128, 0.1);
+  background-color: color-mix(in srgb, var(--accent) 10%, transparent);
 }
 
 .top-zone {
@@ -269,7 +288,8 @@ button:active {
   display: flex;
   gap: 10px;
   padding: 15px;
-  background-color: #e5e7eb;
+  background-color: var(--card2);
+  border: 1px solid var(--line);
   border-radius: 10px;
   margin-bottom: 20px;
 }
@@ -277,7 +297,7 @@ button:active {
 .inv-dot {
   width: 20px;
   height: 20px;
-  background-color: #000;
+  background-color: var(--ink);
   transform: rotate(45deg);
   opacity: 1;
 }
@@ -288,8 +308,7 @@ button:active {
 
 /* --- UI Controls --- */
 .message {
-  font-size: 1.5rem;
-  font-weight: bold;
+  font: 600 27px/1 var(--display);
   height: 40px;
   display: flex;
   align-items: center;
@@ -299,26 +318,36 @@ button:active {
 }
 
 .message span:first-child {
-  font-size: 1.2rem;
-  font-weight: 400;
+  font: 22px/1 var(--display);
+  font-weight: 500;
 }
 
 .message.won {
-  color: #16a34a;
+  color: var(--good);
 }
 .message.error {
-  color: #dc2626;
+  color: var(--bad);
 }
 
 .btn {
-  padding: 0.6em 1.2em;
-  font-size: 1rem;
+  padding: 0.6em 1.4em;
+  font: 600 15px/1 var(--sans);
   cursor: pointer;
-  background-color: teal;
-  color: white;
-  border: none;
-  border-radius: 5px;
+  background-color: var(--accent);
+  color: #fdfbf6;
+  border: 1px solid var(--accent);
+  border-radius: 10px;
   margin-top: 1rem;
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.btn:hover {
+  background-color: var(--accent-ink);
+  border-color: var(--accent-ink);
+  box-shadow: var(--shadow);
 }
 
 .btn.disabled {
@@ -326,7 +355,13 @@ button:active {
   cursor: not-allowed;
 }
 .btn-restart {
-  background-color: #333;
+  background-color: var(--good);
+  border-color: var(--good);
+}
+.btn-restart:hover {
+  filter: brightness(1.06);
+  background-color: var(--good);
+  border-color: var(--good);
 }
 
 @media (max-width: 768px) {
@@ -547,23 +582,22 @@ button:active {
 }
 
 .footer-content {
-  color: #9ca3af;
-  font-size: 0.85rem;
-  font-family: sans-serif;
+  color: var(--dim);
+  font: 13px/1 var(--sans);
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
 .footer-link {
-  color: #6b7280;
+  color: var(--dim);
   text-decoration: none;
   font-weight: 500;
   transition: color 0.2s ease;
 }
 
 .footer-link:hover {
-  color: #374151;
+  color: var(--ink);
 }
 
 .separator {
@@ -584,7 +618,8 @@ button:active {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 1rem;
+  font: 15px/1 var(--sans);
+  color: var(--ink);
   margin: 0;
 }
 
@@ -595,7 +630,7 @@ button:active {
   cursor: pointer;
   padding: 2px;
   display: flex;
-  color: #9ca3af;
+  color: var(--dim);
   margin-left: 4px;
   transition:
     transform 0.2s ease,
@@ -604,11 +639,11 @@ button:active {
 
 .visibility-toggle:hover {
   transform: scale(1.1);
-  color: #6b7280;
+  color: var(--ink);
 }
 
 .visibility-toggle.active {
-  color: #ef4444;
+  color: var(--bad);
 }
 
 .visibility-toggle:focus {
@@ -667,10 +702,10 @@ button:active {
   width: 95%;
   max-width: 600px;
   margin: 0 auto 1.5rem auto;
-  background: white;
+  background: var(--card);
   border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  border: 1px solid #e5e7eb;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--line);
   transition: all 0.3s ease;
   box-sizing: border-box;
   overflow: hidden;
@@ -691,10 +726,10 @@ button:active {
 }
 
 .stat-value {
-  font-family: 'Vazirmatn', sans-serif;
+  font-family: var(--sans);
   font-weight: 700;
   font-size: 1.1rem;
-  color: #9ca3af;
+  color: var(--dim);
   transition: color 0.3s ease;
 }
 
@@ -710,7 +745,7 @@ button:active {
 .toolbar-divider {
   width: 1px;
   height: 24px;
-  background-color: #e5e7eb;
+  background-color: var(--line);
   flex-shrink: 0;
 }
 
@@ -736,32 +771,36 @@ button:active {
   gap: 6px;
   padding: 6px 12px;
   border-radius: 12px;
-  background-color: rgba(0, 128, 128, 0.08);
-  border: 1px solid transparent;
-  color: #4b5563;
-  font-size: 0.85rem;
-  font-weight: 600;
+  background-color: var(--card2);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font: 600 0.85rem/1 var(--sans);
   white-space: nowrap;
   cursor: pointer;
   transition: all 0.2s ease;
   flex-shrink: 0;
 }
 
+.cat-chip:hover {
+  box-shadow: var(--shadow);
+}
+
 .cat-chip.active {
-  background-color: rgb(0, 128, 128);
-  color: white;
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: #fdfbf6;
 }
 
 .cat-chip.locked {
   opacity: 0.4;
-  background-color: #f3f4f6;
+  background-color: var(--card2);
   filter: grayscale(1);
   cursor: not-allowed;
 }
 
 .cat-stars {
   font-size: 0.75rem;
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(44, 38, 32, 0.1);
   padding: 1px 5px;
   border-radius: 8px;
   margin-left: 2px;
@@ -779,7 +818,7 @@ button:active {
     width: 100%;
     justify-content: center;
     padding: 0 0 4px 0;
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 1px solid var(--line-soft);
     gap: 32px;
     margin-bottom: 2px;
   }
