@@ -492,8 +492,9 @@ button:active {
 }
 
 .preview-sound {
-  font-size: 0.75rem;
-  color: #9ca3af;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #4b5563;
   direction: ltr;
   margin-top: 6px;
 }
