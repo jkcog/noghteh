@@ -16,8 +16,8 @@ const WelcomeSlide = () => (
     <h2>Welcome to Noghteh</h2>
     <p className="family-intro-copy">
       Noghteh (نقطه, "dot") helps you learn to read and write Persian. Many
-      letters share the exact same skeleton and differ only by the dots
-      above or below them, so that's what you'll practice: look at a word's
+      letters share the exact same skeleton and differ only by where their
+      dots are placed, so that's what you'll practice: look at a word's
       letter skeletons and place the right dots on each one to spell it.
     </p>
   </>
@@ -27,8 +27,8 @@ const FamilySlide = ({ family }) => (
   <>
     <h2>One Shape, Many Letters</h2>
     <p className="family-intro-copy">
-      Many Persian letters share the same base shape. Dots above or below
-      are the only thing that tells them apart.
+      Many Persian letters share the same base shape. The placement of
+      their dots is the only thing that tells them apart.
     </p>
     <div className="family-group">
       <div className="family-base">
