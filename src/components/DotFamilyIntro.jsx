@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { buildFamilies } from '../letterFamilies';
+import { primaryLatinSound } from '../vowelSlots';
 
 // Each letter here is a real Persian character, so its glyph already
 // includes its own dots; just render the text, no dot overlay on top.
-const LetterPreview = ({ char }) => (
+const LetterPreview = ({ char, sound }) => (
   <div className="letter-preview">
     <div className="preview-char">{char}</div>
+    {sound && <div className="preview-sound">{sound}</div>}
   </div>
 );
 
@@ -35,7 +37,7 @@ const FamilySlide = ({ family }) => (
       </div>
       <div className="family-letters">
         {family.letters.map((ch) => (
-          <LetterPreview key={ch} char={ch} />
+          <LetterPreview key={ch} char={ch} sound={primaryLatinSound(ch)} />
         ))}
       </div>
     </div>

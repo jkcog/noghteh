@@ -83,6 +83,17 @@ describe('DotFamilyIntro', () => {
     expect(container.querySelectorAll('.dot, .cluster, .dot-cluster').length).toBe(0);
   });
 
+  it('shows the latin sound under each family letter, but not under the base shape', () => {
+    const { container } = render(<DotFamilyIntro onClose={() => {}} />);
+    fireEvent.click(screen.getByText('Next'));
+
+    const sounds = Array.from(
+      container.querySelectorAll('.family-letters .preview-sound'),
+    ).map((el) => el.textContent);
+    expect(sounds).toEqual(['b', 'p', 't', 's']);
+    expect(container.querySelector('.family-base .preview-sound')).toBeNull();
+  });
+
   it('lets the user go back to the welcome slide', () => {
     render(<DotFamilyIntro onClose={() => {}} />);
 

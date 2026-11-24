@@ -65,6 +65,10 @@ const SOUNDS = {
   ی: [...consonant('y', 'iy'), ...long('ī', 'i')],
 };
 
+// The letter's most common latin sound, for display (e.g. in the app guide).
+// Not used for alignment, which considers every sound in SOUNDS.
+export const primaryLatinSound = (ch) => SOUNDS[ch][0].latin;
+
 const optionsFor = (ch, index, next) => {
   const sounds = SOUNDS[ch];
   if (!sounds) throw new Error(`No sounds defined for "${ch}"`);

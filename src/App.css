@@ -491,6 +491,12 @@ button:active {
   color: #333;
 }
 
+.preview-sound {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  direction: ltr;
+}
+
 .family-intro-progress {
   display: flex;
   justify-content: center;
