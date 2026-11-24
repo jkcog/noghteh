@@ -394,6 +394,149 @@ button:active {
   box-shadow: 0 0 10px rgba(220, 38, 38, 0.3);
 }
 
+/* --- Dot Family Intro --- */
+.family-intro-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 1000;
+  box-sizing: border-box;
+}
+
+.family-intro-card {
+  background: white;
+  border-radius: 16px;
+  padding: 32px 24px 24px;
+  max-width: 420px;
+  width: 100%;
+  min-height: 440px;
+  max-height: 90vh;
+  overflow-y: auto;
+  text-align: center;
+  direction: ltr;
+  display: flex;
+  flex-direction: column;
+}
+
+.family-intro-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.family-intro-card h2 {
+  margin: 0 0 16px;
+  color: teal;
+  font-size: 1.6rem;
+}
+
+.family-intro-copy {
+  font-size: 1.1rem;
+  color: #6b7280;
+  line-height: 1.7;
+  margin: 0 0 20px;
+}
+
+.family-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.family-group:last-of-type {
+  border-bottom: none;
+  margin-bottom: 8px;
+}
+
+.family-base {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.family-arrow {
+  font-size: 0.85rem;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.family-letters {
+  display: flex;
+  gap: 4px;
+}
+
+.letter-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  direction: rtl;
+}
+
+.preview-char {
+  font-size: 46px;
+  line-height: 46px;
+  color: #333;
+}
+
+.preview-sound {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #4b5563;
+  direction: ltr;
+  margin-top: 6px;
+}
+
+.family-intro-progress {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.family-intro-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #d1d5db;
+}
+
+.family-intro-dot.active {
+  background-color: teal;
+}
+
+.family-intro-nav {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.family-intro-close,
+.family-intro-next,
+.family-intro-back {
+  margin-top: 0;
+}
+
+@media (max-width: 480px) {
+  .preview-char {
+    font-size: 38px;
+    line-height: 38px;
+  }
+}
+
 .footer {
   margin-top: 6rem;
   padding-bottom: 2rem;

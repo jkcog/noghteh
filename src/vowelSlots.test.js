@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { alignVowels } from './vowelSlots';
+import { alignVowels, primaryLatinSound } from './vowelSlots';
 import { WORDS } from './wordList';
+import { LETTERS } from './letterShaping';
 
 describe('alignVowels', () => {
   it('places unwritten short vowels after the letter they follow', () => {
@@ -39,5 +40,20 @@ describe('alignVowels', () => {
       expect(r.ambiguous, `${w.persian} "${w.transliteration}"`).toBe(false);
       expect(r.letters.length).toBe([...w.persian].length);
     });
+  });
+});
+
+describe('primaryLatinSound', () => {
+  it('gives a non-empty latin sound for every letter', () => {
+    Object.keys(LETTERS).forEach((ch) => {
+      expect(primaryLatinSound(ch)).toBeTruthy();
+    });
+  });
+
+  it('matches the sound used in example transliterations', () => {
+    expect(primaryLatinSound('ب')).toBe('b');
+    expect(primaryLatinSound('پ')).toBe('p');
+    expect(primaryLatinSound('ت')).toBe('t');
+    expect(primaryLatinSound('ث')).toBe('s');
   });
 });

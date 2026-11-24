@@ -3,11 +3,14 @@ import './App.css';
 import { useGameLogic } from './hooks/useGameLogic';
 import { usePersianAudio } from './hooks/usePersianAudio';
 import { useSoundEffects } from './hooks/useSoundEffects';
+import { useDotFamilyIntro } from './hooks/useDotFamilyIntro';
 import { Inventory } from './components/Inventory';
 import { GameInterface } from './components/GameInterface';
 import { CategoryToolbar } from './components/CategoryToolbar';
+import { DotFamilyIntro } from './components/DotFamilyIntro';
 import { LightbulbIcon } from './components/Icons/LightbulbIcon';
 import { SpeakerIcon } from './components/Icons/SpeakerIcon';
+import { InfoIcon } from './components/Icons/InfoIcon';
 import { EyeClosed, EyeOpen } from './components/Icons/EyeIcon';
 
 export default function NoghtehGame() {
@@ -35,6 +38,7 @@ export default function NoghtehGame() {
 
   const playAudio = usePersianAudio();
   const playSfx = useSoundEffects();
+  const { isIntroOpen, openIntro, closeIntro } = useDotFamilyIntro();
 
   useEffect(() => {
     if (gameState === 'won') {
@@ -104,8 +108,21 @@ export default function NoghtehGame() {
             </div>
             <span className="icon-label">Hint</span>
           </button>
+
+          <button
+            className="icon-btn-wrapper"
+            onClick={openIntro}
+            title="Guide"
+          >
+            <div className="icon-circle">
+              <InfoIcon />
+            </div>
+            <span className="icon-label">Guide</span>
+          </button>
         </div>
       </div>
+
+      {isIntroOpen && <DotFamilyIntro onClose={closeIntro} />}
 
       <Inventory
         totalAllowance={currentWord.dotAllowance}
