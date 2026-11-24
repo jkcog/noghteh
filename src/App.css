@@ -495,13 +495,15 @@ button:active {
   font-size: 0.75rem;
   color: #9ca3af;
   direction: ltr;
+  margin-top: 6px;
 }
 
 .family-intro-progress {
   display: flex;
   justify-content: center;
   gap: 6px;
-  margin-top: 4px;
+  margin-top: 16px;
+  margin-bottom: 16px;
 }
 
 .family-intro-dot {
@@ -524,7 +526,7 @@ button:active {
 .family-intro-close,
 .family-intro-next,
 .family-intro-back {
-  margin-top: 4px;
+  margin-top: 0;
 }
 
 @media (max-width: 480px) {
