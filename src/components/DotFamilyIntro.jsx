@@ -1,39 +1,56 @@
-import { LETTERS } from '../letterShaping';
-import { DotCluster } from './DotCluster';
+import { useState } from 'react';
+import { buildFamilies } from '../letterFamilies';
 
-// Smallest useful set to start with: the two families learners mix up most.
-// Each entry is [baseLetterFromFamily, ...restOfFamily] — the base shape's
-// dotless glyph is read straight off LETTERS so it can never drift from the
-// game's own dot data.
-const FAMILY_GROUPS = [
-  ['ب', 'پ', 'ت', 'ث'],
-  ['ح', 'ج', 'چ', 'خ'],
-];
-
-const buildFamilies = () =>
-  FAMILY_GROUPS.map((chars) => ({
-    base: LETTERS[chars[0]].base,
-    letters: chars.map((ch) => ({
-      char: ch,
-      top: LETTERS[ch].top,
-      bottom: LETTERS[ch].bottom,
-    })),
-  }));
-
-const LetterPreview = ({ char, top, bottom }) => (
+// Each letter here is a real Persian character, so its glyph already
+// includes its own dots — just render the text, no dot overlay on top.
+const LetterPreview = ({ char }) => (
   <div className="letter-preview">
-    <div className="preview-dots">
-      <DotCluster count={top} position="top" />
-    </div>
     <div className="preview-char">{char}</div>
-    <div className="preview-dots">
-      <DotCluster count={bottom} position="bottom" />
-    </div>
   </div>
 );
 
+const WelcomeSlide = () => (
+  <>
+    <h2>Welcome to Noghteh</h2>
+    <p className="family-intro-copy">
+      Noghteh (نقطه, "dot") helps you learn to read and write Persian. Many
+      letters share the exact same skeleton and differ only by the dots
+      above or below them — so that's what you'll practice: look at a
+      word's letter skeletons and place the right dots on each one to spell
+      it.
+    </p>
+  </>
+);
+
+const FamilySlide = ({ family }) => (
+  <>
+    <h2>One Shape, Many Letters</h2>
+    <p className="family-intro-copy">
+      Many Persian letters share the same base shape. Dots above or below
+      are the only thing that tells them apart.
+    </p>
+    <div className="family-group">
+      <div className="family-base">
+        <LetterPreview char={family.base} />
+        <span className="family-arrow">+ dots →</span>
+      </div>
+      <div className="family-letters">
+        {family.letters.map((ch) => (
+          <LetterPreview key={ch} char={ch} />
+        ))}
+      </div>
+    </div>
+  </>
+);
+
 export const DotFamilyIntro = ({ onClose }) => {
-  const families = buildFamilies();
+  const [families] = useState(buildFamilies);
+  const [slide, setSlide] = useState(0);
+  const totalSlides = families.length + 1;
+  const isLastSlide = slide === totalSlides - 1;
+
+  const goNext = () => setSlide((s) => Math.min(s + 1, totalSlides - 1));
+  const goBack = () => setSlide((s) => Math.max(s - 1, 0));
 
   return (
     <div className="family-intro-overlay" onClick={onClose}>
@@ -41,36 +58,35 @@ export const DotFamilyIntro = ({ onClose }) => {
         className="family-intro-card"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
-        aria-label="Letter families"
+        aria-label="Welcome to Noghteh"
       >
-        <h2>One Shape, Many Letters</h2>
-        <p className="family-intro-copy">
-          Many Persian letters share the same base shape. Dots above or below
-          are the only thing that tells them apart.
-        </p>
+        {slide === 0 ? <WelcomeSlide /> : <FamilySlide family={families[slide - 1]} />}
 
-        {families.map((family) => (
-          <div className="family-group" key={family.base}>
-            <div className="family-base">
-              <LetterPreview char={family.base} top={0} bottom={0} />
-              <span className="family-arrow">+ dots →</span>
-            </div>
-            <div className="family-letters">
-              {family.letters.map((l) => (
-                <LetterPreview
-                  key={l.char}
-                  char={l.char}
-                  top={l.top}
-                  bottom={l.bottom}
-                />
-              ))}
-            </div>
-          </div>
-        ))}
+        <div className="family-intro-progress">
+          {Array.from({ length: totalSlides }).map((_, i) => (
+            <span
+              key={i}
+              className={`family-intro-dot${i === slide ? ' active' : ''}`}
+            />
+          ))}
+        </div>
 
-        <button className="btn family-intro-close" onClick={onClose}>
-          Got it
-        </button>
+        <div className="family-intro-nav">
+          {slide > 0 && (
+            <button className="btn btn-restart family-intro-back" onClick={goBack}>
+              Back
+            </button>
+          )}
+          {isLastSlide ? (
+            <button className="btn family-intro-close" onClick={onClose}>
+              Got it
+            </button>
+          ) : (
+            <button className="btn family-intro-next" onClick={goNext}>
+              Next
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

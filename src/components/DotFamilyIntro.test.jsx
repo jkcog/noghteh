@@ -1,53 +1,98 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { DotFamilyIntro } from './DotFamilyIntro';
+import { buildFamilies } from '../letterFamilies';
 import { LETTERS } from '../letterShaping';
 
-describe('DotFamilyIntro', () => {
-  it('shows a base shape and every dotted letter for both families', () => {
-    const { container } = render(<DotFamilyIntro onClose={() => {}} />);
+describe('buildFamilies', () => {
+  it('groups every letter that shares a base shape with another letter', () => {
+    const families = buildFamilies();
 
-    const bases = container.querySelectorAll('.family-base .preview-char');
-    expect(Array.from(bases).map((el) => el.textContent)).toEqual([
-      LETTERS['ب'].base,
-      LETTERS['ح'].base,
-    ]);
+    // Every family has more than one member, and every member really does
+    // share its base with the others in its family.
+    families.forEach((family) => {
+      expect(family.letters.length).toBeGreaterThan(1);
+      family.letters.forEach((ch) => {
+        expect(LETTERS[ch].base).toBe(family.base);
+      });
+    });
 
-    const familyLetterGroups = container.querySelectorAll('.family-letters');
-    expect(familyLetterGroups.length).toBe(2);
-    expect(
-      Array.from(familyLetterGroups[0].querySelectorAll('.preview-char')).map(
-        (el) => el.textContent,
-      ),
-    ).toEqual(['ب', 'پ', 'ت', 'ث']);
-    expect(
-      Array.from(familyLetterGroups[1].querySelectorAll('.preview-char')).map(
-        (el) => el.textContent,
-      ),
-    ).toEqual(['ح', 'ج', 'چ', 'خ']);
+    // Nothing with a unique base shape (e.g. ل, م, ه) was swept into a family.
+    const grouped = new Set(families.flatMap((f) => f.letters));
+    Object.keys(LETTERS)
+      .filter((ch) => !grouped.has(ch))
+      .forEach((ch) => {
+        const basesSharedByOthers = Object.keys(LETTERS).filter(
+          (other) => other !== ch && LETTERS[other].base === LETTERS[ch].base,
+        );
+        expect(basesSharedByOthers).toEqual([]);
+      });
+
+    // Known families are present with every member.
+    expect(families.find((f) => f.letters.includes('ب')).letters).toEqual(
+      expect.arrayContaining(['ب', 'پ', 'ت', 'ث', 'ن', 'ی']),
+    );
+    expect(families.find((f) => f.letters.includes('ح')).letters).toEqual(
+      expect.arrayContaining(['ح', 'ج', 'چ', 'خ']),
+    );
   });
+});
 
-  it('renders the correct number of dots for a letter with dots above', () => {
+describe('DotFamilyIntro', () => {
+  it('opens on a welcome slide that introduces the app, not a letter family', () => {
     render(<DotFamilyIntro onClose={() => {}} />);
 
-    const preview = screen.getByText('ت').closest('.letter-preview');
-    const dots = preview.querySelectorAll('.dot');
-    expect(dots.length).toBe(LETTERS['ت'].top);
+    expect(screen.getByText('Welcome to Noghteh')).toBeTruthy();
+    expect(screen.getByText(/place the right dots/i)).toBeTruthy();
+    expect(screen.queryByText('One Shape, Many Letters')).toBeNull();
+    expect(screen.queryByText('Back')).toBeNull();
   });
 
-  it('renders no dots for a letter with none, like the bare ح shape', () => {
+  it('steps through every letter family exactly once, in order, after the welcome slide', () => {
+    const families = buildFamilies();
     const { container } = render(<DotFamilyIntro onClose={() => {}} />);
 
-    const [, hahGroup] = container.querySelectorAll('.family-letters');
-    const hahPreview = hahGroup.querySelector('.letter-preview');
-    expect(hahPreview.querySelectorAll('.dot, .cluster').length).toBe(0);
+    families.forEach((family) => {
+      fireEvent.click(screen.getByText('Next'));
+
+      expect(screen.getByText('One Shape, Many Letters')).toBeTruthy();
+      const base = container.querySelector('.family-base .preview-char').textContent;
+      expect(base).toBe(family.base);
+      const letters = Array.from(
+        container.querySelectorAll('.family-letters .preview-char'),
+      ).map((el) => el.textContent);
+      expect(letters).toEqual(family.letters);
+    });
+
+    // After the last family, "Next" is replaced by "Got it".
+    expect(screen.queryByText('Next')).toBeNull();
+    expect(screen.getByText('Got it')).toBeTruthy();
   });
 
-  it('calls onClose when the close button is clicked', () => {
+  it('shows only the letters themselves, with no dot overlay on top', () => {
+    const { container } = render(<DotFamilyIntro onClose={() => {}} />);
+    fireEvent.click(screen.getByText('Next'));
+
+    expect(container.querySelectorAll('.dot, .cluster, .dot-cluster').length).toBe(0);
+  });
+
+  it('lets the user go back to the welcome slide', () => {
+    render(<DotFamilyIntro onClose={() => {}} />);
+
+    fireEvent.click(screen.getByText('Next'));
+    expect(screen.getByText('One Shape, Many Letters')).toBeTruthy();
+
+    fireEvent.click(screen.getByText('Back'));
+    expect(screen.getByText('Welcome to Noghteh')).toBeTruthy();
+  });
+
+  it('calls onClose when "Got it" is clicked on the last slide', () => {
     const onClose = vi.fn();
     render(<DotFamilyIntro onClose={onClose} />);
 
+    buildFamilies().forEach(() => fireEvent.click(screen.getByText('Next')));
     fireEvent.click(screen.getByText('Got it'));
+
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 

@@ -474,20 +474,39 @@ button:active {
   direction: rtl;
 }
 
-.preview-dots {
-  height: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .preview-char {
   font-size: 40px;
   line-height: 40px;
   color: #333;
 }
 
-.family-intro-close {
+.family-intro-progress {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.family-intro-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #d1d5db;
+}
+
+.family-intro-dot.active {
+  background-color: teal;
+}
+
+.family-intro-nav {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.family-intro-close,
+.family-intro-next,
+.family-intro-back {
   margin-top: 4px;
 }
 
