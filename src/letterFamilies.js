@@ -4,10 +4,18 @@ import { LETTERS } from './letterShaping';
 // family can never drift from the game's own dot data and nothing is
 // hand-picked or left out. Families with only one member (nothing to
 // confuse it with) are skipped.
+//
+// A letter with an `endBase` (ن, ی) only shares its base shape with the
+// rest of its family in the initial/medial position; on its own (how it's
+// shown here) it renders as `endBase` instead, a different shape. Those
+// letters are left out of grouping entirely so a family only ever shows
+// letters that actually look the same standalone.
 export const buildFamilies = () => {
   const byBase = new Map();
   for (const ch of Object.keys(LETTERS)) {
-    const { base } = LETTERS[ch];
+    const def = LETTERS[ch];
+    if (def.endBase) continue;
+    const { base } = def;
     if (!byBase.has(base)) byBase.set(base, []);
     byBase.get(base).push(ch);
   }

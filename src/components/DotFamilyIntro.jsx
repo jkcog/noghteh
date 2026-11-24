@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { buildFamilies } from '../letterFamilies';
 
 // Each letter here is a real Persian character, so its glyph already
-// includes its own dots — just render the text, no dot overlay on top.
+// includes its own dots; just render the text, no dot overlay on top.
 const LetterPreview = ({ char }) => (
   <div className="letter-preview">
     <div className="preview-char">{char}</div>
@@ -15,9 +15,8 @@ const WelcomeSlide = () => (
     <p className="family-intro-copy">
       Noghteh (نقطه, "dot") helps you learn to read and write Persian. Many
       letters share the exact same skeleton and differ only by the dots
-      above or below them — so that's what you'll practice: look at a
-      word's letter skeletons and place the right dots on each one to spell
-      it.
+      above or below them, so that's what you'll practice: look at a word's
+      letter skeletons and place the right dots on each one to spell it.
     </p>
   </>
 );
@@ -60,7 +59,9 @@ export const DotFamilyIntro = ({ onClose }) => {
         role="dialog"
         aria-label="Welcome to Noghteh"
       >
-        {slide === 0 ? <WelcomeSlide /> : <FamilySlide family={families[slide - 1]} />}
+        <div className="family-intro-content">
+          {slide === 0 ? <WelcomeSlide /> : <FamilySlide family={families[slide - 1]} />}
+        </div>
 
         <div className="family-intro-progress">
           {Array.from({ length: totalSlides }).map((_, i) => (

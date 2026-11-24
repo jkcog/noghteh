@@ -17,21 +17,28 @@ describe('buildFamilies', () => {
       });
     });
 
-    // Nothing with a unique base shape (e.g. ل, م, ه) was swept into a family.
+    // Nothing with a unique base shape (e.g. ل, م, ه), and nothing with an
+    // endBase override (ن, ی — they only match the family shape in the
+    // initial/medial position, not on their own), was swept into a family.
     const grouped = new Set(families.flatMap((f) => f.letters));
     Object.keys(LETTERS)
-      .filter((ch) => !grouped.has(ch))
+      .filter((ch) => !grouped.has(ch) && !LETTERS[ch].endBase)
       .forEach((ch) => {
         const basesSharedByOthers = Object.keys(LETTERS).filter(
           (other) => other !== ch && LETTERS[other].base === LETTERS[ch].base,
         );
         expect(basesSharedByOthers).toEqual([]);
       });
+    expect(grouped.has('ن')).toBe(false);
+    expect(grouped.has('ی')).toBe(false);
 
-    // Known families are present with every member.
-    expect(families.find((f) => f.letters.includes('ب')).letters).toEqual(
-      expect.arrayContaining(['ب', 'پ', 'ت', 'ث', 'ن', 'ی']),
-    );
+    // Known families are present with every member, and nothing extra.
+    expect(families.find((f) => f.letters.includes('ب')).letters).toEqual([
+      'ب',
+      'پ',
+      'ت',
+      'ث',
+    ]);
     expect(families.find((f) => f.letters.includes('ح')).letters).toEqual(
       expect.arrayContaining(['ح', 'ج', 'چ', 'خ']),
     );
