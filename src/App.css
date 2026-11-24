@@ -435,10 +435,11 @@ button:active {
 .family-intro-card h2 {
   margin: 0 0 16px;
   color: teal;
+  font-size: 1.6rem;
 }
 
 .family-intro-copy {
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   color: #6b7280;
   line-height: 1.7;
   margin: 0 0 20px;
@@ -467,7 +468,7 @@ button:active {
 }
 
 .family-arrow {
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   color: #9ca3af;
   font-weight: 600;
 }
@@ -485,8 +486,8 @@ button:active {
 }
 
 .preview-char {
-  font-size: 40px;
-  line-height: 40px;
+  font-size: 46px;
+  line-height: 46px;
   color: #333;
 }
 
@@ -522,8 +523,8 @@ button:active {
 
 @media (max-width: 480px) {
   .preview-char {
-    font-size: 34px;
-    line-height: 34px;
+    font-size: 38px;
+    line-height: 38px;
   }
 }
 

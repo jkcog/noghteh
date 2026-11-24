@@ -112,12 +112,12 @@ export default function NoghtehGame() {
           <button
             className="icon-btn-wrapper"
             onClick={openIntro}
-            title="Letter Families"
+            title="Guide"
           >
             <div className="icon-circle">
               <InfoIcon />
             </div>
-            <span className="icon-label">Families</span>
+            <span className="icon-label">Guide</span>
           </button>
         </div>
       </div>
