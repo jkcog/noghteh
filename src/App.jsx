@@ -61,7 +61,9 @@ export default function NoghtehGame() {
         isCategoryUnlocked={isCategoryUnlocked}
       />
       <div className="header">
-        <h1>نقطه Noghteh</h1>
+        <h1>
+          Noghteh <span className="fa" lang="fa">نقطه</span>
+        </h1>
         <p className="instructions">
           Place the correct dots on the letters. Left-click to add, right-click
           to remove.
