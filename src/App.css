@@ -28,7 +28,7 @@
 }
 
 .header h1 .fa {
-  font-family: var(--fa);
+  font-family: 'Noto Naskh Arabic', var(--fa);
   font-size: 0.84em;
   color: var(--dim);
 }
