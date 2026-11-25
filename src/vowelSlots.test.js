@@ -33,11 +33,18 @@ describe('alignVowels', () => {
     expect(alignVowels('پسر', 'Xyz').ok).toBe(false);
   });
 
-  it('aligns every word in the word list unambiguously', () => {
+  // و's bare 'o' is genuinely ambiguous between a long and a short vowel
+  // (persian-core can't tell from the spelling alone - see persian-core's
+  // docs/RECONCILIATION.md, "و's short vowel"). These three words were
+  // reviewed with the author and confirmed short - خورشید, دو, دوشنبه.
+  // Everything else in the word list still aligns with no ambiguity.
+  const KNOWN_AMBIGUOUS_VAV = new Set(['خورشید', 'دو', 'دوشنبه']);
+
+  it('aligns every word in the word list unambiguously, except the known و cases', () => {
     WORDS.forEach((w) => {
       const r = alignVowels(w.persian, w.transliteration);
       expect(r.ok, `${w.persian} "${w.transliteration}"`).toBe(true);
-      expect(r.ambiguous, `${w.persian} "${w.transliteration}"`).toBe(false);
+      expect(r.ambiguous, `${w.persian} "${w.transliteration}"`).toBe(KNOWN_AMBIGUOUS_VAV.has(w.persian));
       expect(r.letters.length).toBe([...w.persian].length);
     });
   });
