@@ -7,6 +7,7 @@ export const LetterColumn = ({
   handleZoneClick,
   handleRightClick,
   showHints,
+  isWrong = false,
 }) => {
   const bottomOffset = letter.bottomOffset || 0;
   const topOffset = letter.topOffset || 0;
@@ -14,7 +15,7 @@ export const LetterColumn = ({
   const bottomYOffset = letter.bottomYOffset || 0;
 
   return (
-    <div className="letter-container" style={{ zIndex: 100 - index }}>
+    <div className={`letter-container${isWrong ? ' wrong' : ''}`} style={{ zIndex: 100 - index }}>
       {/* TOP ZONE */}
       <div
         className="dot-zone top-zone"

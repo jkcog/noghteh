@@ -23,6 +23,7 @@ export default function NoghtehGame() {
     handleZoneClick,
     handleRightClick,
     isShaking,
+    wrongLetterIds,
     checkWin,
     showHints,
     toggleHints,
@@ -136,6 +137,7 @@ export default function NoghtehGame() {
         handleRightClick={handleRightClick}
         gameState={gameState}
         isShaking={isShaking}
+        wrongLetterIds={wrongLetterIds}
         showHints={showHints}
       />
 
