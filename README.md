@@ -19,10 +19,11 @@ A minimalist, interactive tool for learning the placement of dots (_noghteh_) in
 - **Audio:** Listen to pronunciations for every word to reinforce learning.
 - **Hard Mode:** Toggle the eye icon to blur the transliteration, testing your ability to read the Persian script directly.
 - **Streak System:** Build a streak by solving words perfectly (no hints, no errors).
-- **Category-Based Learning:** ~270 everyday words grouped into sets: Basics, Food, Animals, Objects, Body, Nature, Numbers and Colours, chosen so every letter is practised in every form (initial, medial, final, isolated).
+- **Category-Based Learning:** ~275 everyday words grouped into sets: Basics, Food, Animals, Objects, Body, Nature, Numbers and Colours, chosen so every letter is practised in every form (initial, medial, final, isolated).
 - **Mastery Stars:** Track your proficiency with each word. Earning stars represents consistent perfect solves.
 - **Structured Unlocks:** A milestone-based system where mastering one category (earning stars) unlocks the next.
 - **Visual Feedback:** Instant animations for correct matches and a "shake" effect for errors.
+- **Letter Family Guide:** A walkthrough (via the Guide button) grouping letters that share the same base shape, showing each one's Latin sound so you can see how a single skeleton plus different dots becomes different letters.
 
 ## 🎨 UX & Interaction Details
 
@@ -44,4 +45,5 @@ A minimalist, interactive tool for learning the placement of dots (_noghteh_) in
 Words live in `src/words.json` as `[id, category, translation, transliteration, persian]`. Skeleton letters are generated automatically from the Persian spelling (see `src/letterShaping.js`).
 
 - `node scripts/letter-coverage.mjs` shows how many words exercise each letter in each form.
+- `node scripts/vowel-audit.mjs` checks that each word's Persian spelling aligns cleanly with its transliteration, and lists any that fail or are ambiguous.
 - `python scripts/generate_audio.py` generates any missing pronunciation mp3s (needs `edge-tts`, ideally in a virtualenv).
