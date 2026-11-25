@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { buildFamilies } from '../letterFamilies';
-import { primaryLatinSound } from '../vowelSlots';
+import { primaryLatinSound } from 'persian-core';
 
 // Each letter here is a real Persian character, so its glyph already
 // includes its own dots; just render the text, no dot overlay on top.

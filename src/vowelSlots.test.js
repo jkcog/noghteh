@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { alignVowels, primaryLatinSound } from './vowelSlots';
+import { alignVowels, primaryLatinSound } from 'persian-core';
 import { WORDS } from './wordList';
 import { LETTERS } from './letterShaping';
 
