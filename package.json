@@ -12,6 +12,7 @@
     "test:ci": "vitest run"
   },
   "dependencies": {
+    "persian-core": "github:jkcog/persian-core#1fd069c5aa14e907e59b0fa29f4acbc4e02f38b7",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },

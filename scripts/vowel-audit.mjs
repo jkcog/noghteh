@@ -2,7 +2,7 @@
 // the ones that fail or are ambiguous.
 // Usage: node scripts/vowel-audit.mjs
 import { readFileSync } from 'node:fs';
-import { alignVowels } from '../src/vowelSlots.js';
+import { alignVowels } from 'persian-core';
 
 const words = JSON.parse(
   readFileSync(new URL('../src/words.json', import.meta.url)),
